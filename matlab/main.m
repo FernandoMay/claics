@@ -31,15 +31,37 @@ fprintf('Loading Lena image...\n');
 if exist('lena512.mat', 'file')
     load('lena512.mat', 'im');
     fprintf('Loaded lena512.mat (512x512)\n');
+    im = double(im);
 elseif exist('../lena512.mat', 'file')
     load('../lena512.mat', 'im');
     fprintf('Loaded ../lena512.mat (512x512)\n');
+    im = double(im);
+elseif exist('lena512.png', 'file')
+    im = imread('lena512.png');
+    im = double(im);
+    fprintf('Loaded lena512.png (512x512)\n');
+elseif exist('../lena512.png', 'file')
+    im = imread('../lena512.png');
+    im = double(im);
+    fprintf('Loaded ../lena512.png (512x512)\n');
 else
-    fprintf('lena512.mat not found. Generating synthetic image...\n');
-    im = imread('cameraman.tif');
-    im = imresize(im, [512, 512]);
-    im = im2double(im);
-    fprintf('Generated 512x512 test image\n');
+    fprintf('Lena not found. Loading cameraman.tif from MATLAB toolbox...\n');
+    try
+        im = imread('cameraman.tif');
+        im = imresize(im, [512, 512]);
+        im = double(im);
+        fprintf('Loaded and resized cameraman.tif to 512x512\n');
+    catch
+        fprintf('Cameraman not found. Generating synthetic test image...\n');
+        [x, y] = meshgrid(1:512, 1:512);
+        im = 128 + 50*sin(0.02*x+0.015*y) + 30*cos(0.04*x) + 20*sin(0.06*y);
+        im = im + 10*randn(512);
+        kernel = [1 2 1; 2 4 2; 1 2 1] / 16;
+        im = conv2(im, kernel, 'same');
+        im(im < 0) = 0;
+        im(im > 255) = 255;
+        fprintf('Generated 512x512 synthetic test image\n');
+    end
 end
 
 [M, N] = size(im);

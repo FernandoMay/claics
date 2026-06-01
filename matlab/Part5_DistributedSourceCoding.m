@@ -24,8 +24,8 @@ function results = Part5_DistributedSourceCoding(im, correlation_levels)
     fprintf('d_H(x,y) = sum_i (x_i XOR y_i)\n');
     fprintf('Measures correlation between two binary sources.\n');
 
-    im = im2double(im);
-    im_binary = im > 0.5;
+    im = double(im);
+    im_binary = im > 128;
     im_binary = im_binary(:)';
 
     results = struct();
@@ -58,8 +58,9 @@ function results = Part5_DistributedSourceCoding(im, correlation_levels)
              0 1 1 1 0 0 1];
 
         coded_x = mod(x_blocks * G, 2);
-        syndrome_x = mod(x_blocks * H', 2);
-        syndrome_y = mod(y_blocks * H', 2);
+        syndrome_x = mod(coded_x * H', 2);
+        coded_y = mod(y_blocks * G, 2);
+        syndrome_y = mod(coded_y * H', 2);
         syndrome_diff = mod(syndrome_x + syndrome_y, 2);
 
         synd_lookup = zeros(8, 7);
@@ -73,12 +74,16 @@ function results = Part5_DistributedSourceCoding(im, correlation_levels)
             synd_lookup(synd_idx, :) = err_vec;
         end
 
-        decoded_x = y_blocks;
+        decoded_y_coded = coded_y;
         for i = 1:n_blocks
             synd_idx = syndrome_diff(i, 1)*4 + syndrome_diff(i, 2)*2 + syndrome_diff(i, 3) + 1;
             err_pattern = synd_lookup(synd_idx, :);
-            decoded_x(i, :) = xor(y_blocks(i, :), err_pattern(1:4));
+            decoded_y_coded(i, :) = xor(coded_y(i, :), err_pattern);
         end
+        Ginv = G(1:4, 1:4);
+        decoded_x = mod(decoded_y_coded(:, 1:4) * inv(Ginv), 2);
+        decoded_x = round(decoded_x);
+        decoded_x = mod(decoded_x, 2);
 
         sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
         results.slepian_wolf_rate(c_idx) = sw_rate;
@@ -123,7 +128,7 @@ function results = Part5_DistributedSourceCoding(im, correlation_levels)
     text(0.1, 0.15, 'Decoder uses correlation to reconstruct', 'FontSize', 11);
     axis off;
 
-    saveas(gcf, '../results/part5_distributed_source_coding.png');
+    print(gcf, '../results/part5_distributed_source_coding.png', '-dpng');
 
     fprintf('\n--- Comparison of Channel Codes for DSC ---\n');
     fprintf('Hamming (7,4):  Rate=4/7=0.571,  Corrects 1 error\n');

@@ -21,7 +21,7 @@ function results = Part3_ScalableCoding(im, snr_weak_dB, snr_diff_dB)
          72 92 95 98 113 100 103 99];
 
     [M, N] = size(im);
-    im = im2double(im);
+    im = double(im);
 
     fprintf('========================================\n');
     fprintf('PART III: Scalable Image Coding (FGS)\n');
@@ -91,7 +91,7 @@ function results = Part3_ScalableCoding(im, snr_weak_dB, snr_diff_dB)
         end
     end
     recon_weak_img(recon_weak_img < 0) = 0;
-    recon_weak_img(recon_weak_img > 1) = 1;
+    recon_weak_img(recon_weak_img > 255) = 255;
 
     enhance_layer_bits = de2bi(double(enhance_layer(:)), n_enhance_bits, 'left-msb')';
     enhance_layer_bits = enhance_layer_bits(:)';
@@ -123,10 +123,10 @@ function results = Part3_ScalableCoding(im, snr_weak_dB, snr_diff_dB)
         end
     end
     recon_strong_img(recon_strong_img < 0) = 0;
-    recon_strong_img(recon_strong_img > 1) = 1;
+    recon_strong_img(recon_strong_img > 255) = 255;
 
-    psnr_weak = 10*log10(1/mean((im(:)-recon_weak_img(:)).^2));
-    psnr_strong = 10*log10(1/mean((im(:)-recon_strong_img(:)).^2));
+    psnr_weak = 10*log10(255^2/mean((im(:)-recon_weak_img(:)).^2));
+    psnr_strong = 10*log10(255^2/mean((im(:)-recon_strong_img(:)).^2));
 
     fprintf('\nWeak user PSNR: %.2f dB\n', psnr_weak);
     fprintf('Strong user PSNR: %.2f dB\n', psnr_strong);
@@ -143,7 +143,7 @@ function results = Part3_ScalableCoding(im, snr_weak_dB, snr_diff_dB)
 
     figure('Name', 'Part III: Scalable Coding', 'Position', [100, 100, 1400, 400]);
     subplot(1,4,1);
-    imshow(im);
+    imshow(uint8(im));
     title('Original', 'FontSize', 12);
 
     base_recon_img = zeros(M, N);
@@ -156,21 +156,21 @@ function results = Part3_ScalableCoding(im, snr_weak_dB, snr_diff_dB)
         end
     end
     base_recon_img(base_recon_img < 0) = 0;
-    base_recon_img(base_recon_img > 1) = 1;
-    psnr_base_only = 10*log10(1/mean((im(:)-base_recon_img(:)).^2));
+    base_recon_img(base_recon_img > 255) = 255;
+    psnr_base_only = 10*log10(255^2/mean((im(:)-base_recon_img(:)).^2));
     subplot(1,4,2);
-    imshow(base_recon_img);
+    imshow(uint8(base_recon_img));
     title(sprintf('Base Layer Only\nPSNR=%.2f dB', psnr_base_only), 'FontSize', 11);
 
     subplot(1,4,3);
-    imshow(recon_weak_img);
+    imshow(uint8(recon_weak_img));
     title(sprintf('Weak User\nPSNR=%.2f dB', psnr_weak), 'FontSize', 11);
 
     subplot(1,4,4);
-    imshow(recon_strong_img);
+    imshow(uint8(recon_strong_img));
     title(sprintf('Strong User\nPSNR=%.2f dB', psnr_strong), 'FontSize', 11);
 
-    saveas(gcf, '../results/part3_scalable_coding.png');
+    print(gcf, '../results/part3_scalable_coding.png', '-dpng');
 
     fprintf('\nPart III Complete.\n\n');
 end

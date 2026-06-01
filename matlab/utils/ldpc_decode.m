@@ -1,45 +1,45 @@
-function decoded_bits = ldpc_decode(received_signal, H, max_iter)
+function decoded_bits = ldpc_decode(received, H, max_iter)
     if nargin < 3
-        max_iter = 50;
+        max_iter = 100;
     end
     [m, n] = size(H);
-    LLR = 2 * received_signal / mean(abs(received_signal))^2;
+    L_ch = 2 * received(:)';
     L_q = zeros(m, n);
     L_r = zeros(m, n);
-    L_total = LLR;
+    L_Q = L_ch;
     for iter = 1:max_iter
         for i = 1:m
-            cols = find(H(i, :));
-            for j_idx = 1:length(cols)
-                j = cols(j_idx);
-                temp = L_total(j);
-                for k_idx = 1:length(cols)
-                    if cols(k_idx) ~= j
-                        temp = temp + L_q(i, cols(k_idx));
+            idx = find(H(i, :));
+            for j_idx = 1:length(idx)
+                j = idx(j_idx);
+                temp = L_Q(j);
+                for k_idx = 1:length(idx)
+                    if idx(k_idx) ~= j
+                        temp = temp - L_r(i, idx(k_idx));
+                    end
+                    L_q(i, idx(k_idx)) = temp;
+                end
+                prod_alpha = 1;
+                sum_phi = 0;
+                for k_idx = 1:length(idx)
+                    alpha_ik = sign(L_q(i, idx(k_idx)));
+                    phi_ik = tanh(abs(L_q(i, idx(k_idx)))/2);
+                    if idx(k_idx) ~= j
+                        prod_alpha = prod_alpha * alpha_ik;
+                        sum_phi = sum_phi + phi_ik;
                     end
                 end
-                L_r(i, j) = temp;
+                sum_phi = min(sum_phi, 1-eps);
+                L_r(i, j) = prod_alpha * log((1 + sum_phi) / (1 - sum_phi));
             end
         end
-        for j = 1:n
-            rows = find(H(:, j));
-            for i_idx = 1:length(rows)
-                i = rows(i_idx);
-                temp = 0;
-                for k_idx = 1:length(rows)
-                    if rows(k_idx) ~= i
-                        temp = temp + L_r(rows(k_idx), j);
-                    end
-                end
-                L_q(i, j) = temp;
-            end
-        end
-        L_total = LLR + sum(L_r(:, :), 1);
-        decisions = zeros(1, n);
-        decisions(L_total > 0) = 1;
-        if mod(H * decisions', 2) == 0
+        L_Q = L_ch + sum(L_r, 1);
+        hard_dec = zeros(1, n);
+        hard_dec(L_Q > 0) = 1;
+        parity = mod(H * hard_dec', 2);
+        if sum(parity) == 0
             break;
         end
     end
-    decoded_bits = decisions;
+    decoded_bits = hard_dec;
 end

@@ -1,0 +1,450 @@
+============================================================
+Cross-Layer Analysis of Image Communication Systems
+============================================================
+
+Loading Lena image...
+lena512.mat not found. Generating synthetic image...
+Generated 512x512 test image
+Image size: 512 x 512
+
+============================================================
+PART I: Lossy Image Coding (JPEG-like)
+============================================================
+
+========================================
+PART I: Lossy Image Coding (JPEG-like)
+========================================
+{Unable to perform assignment because the left and right sides have a different number of elements.
+
+Error in Part1_LossyCoding (line 82)
+        results.compressed_sizes(b_idx) = compressed_size;
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in main (line 56)
+results1 = Part1_LossyCoding(im, beta_values);
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+} 
+============================================================
+Cross-Layer Analysis of Image Communication Systems
+============================================================
+
+Loading Lena image...
+lena512.mat not found. Generating synthetic image...
+Generated 512x512 test image
+Image size: 512 x 512
+
+============================================================
+PART I: Lossy Image Coding (JPEG-like)
+============================================================
+
+========================================
+PART I: Lossy Image Coding (JPEG-like)
+========================================
+Beta =   0.5 | MSE =   0.1257 | PSNR =   9.01 dB | Compressed = 2319 bits | CR = 904.33
+  -> Saved reconstructed image: ../results/reconstructed_beta_0.5.png
+Beta =   1.0 | MSE =   0.2758 | PSNR =   5.59 dB | Compressed = 0 bits | CR =    Inf
+  -> Saved reconstructed image: ../results/reconstructed_beta_1.0.png
+Beta =   2.0 | MSE =   0.2758 | PSNR =   5.59 dB | Compressed = 0 bits | CR =    Inf
+Beta =   4.0 | MSE =   0.2758 | PSNR =   5.59 dB | Compressed = 0 bits | CR =    Inf
+  -> Saved reconstructed image: ../results/reconstructed_beta_4.0.png
+Beta =   8.0 | MSE =   0.2758 | PSNR =   5.59 dB | Compressed = 0 bits | CR =    Inf
+Beta =  16.0 | MSE =   0.2758 | PSNR =   5.59 dB | Compressed = 0 bits | CR =    Inf
+  -> Saved reconstructed image: ../results/reconstructed_beta_16.0.png
+
+Part I Complete.
+
+============================================================
+PART II: Noisy Channel Transmission
+============================================================
+
+========================================
+PART II: Noisy Channel Transmission
+========================================
+Total bits to transmit: 4194304
+
+--- SNR = 0 dB ---
+  Scheme 1 (Direct): BER = 7.852697e-02, PSNR = 5.08 dB
+  Scheme 2 (Huffman): BER = 7.875800e-02, PSNR = 5.08 dB
+{Unable to perform assignment because the left and right sides have a different number of elements.
+
+Error in Part2_NoisyChannel (line 107)
+            ldpc_decoded((blk-1)*10+1:blk*10) = ldpc_decode(seg, ldpc_H, 20);
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in main (line 66)
+results2 = Part2_NoisyChannel(im, snr_range_2);
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+} 
+============================================================
+Cross-Layer Analysis of Image Communication Systems
+============================================================
+
+Loading Lena image...
+Lena image not found. Generating synthetic test image...
+NOTE: For best results, place lena512.mat or lena512.png in the matlab/ folder.
+Generated 512x512 synthetic test image
+Image size: 512 x 512
+
+============================================================
+PART I: Lossy Image Coding (JPEG-like)
+============================================================
+
+========================================
+PART I: Lossy Image Coding (JPEG-like)
+========================================
+Beta =   0.5 | MSE =  94.8131 | PSNR =  28.36 dB | Compressed = 173755 bits | CR =  12.07
+  -> Saved: ../results/reconstructed_beta_0.5.png
+Beta =   1.0 | MSE = 323.3429 | PSNR =  23.03 dB | Compressed = 113703 bits | CR =  18.44
+  -> Saved: ../results/reconstructed_beta_1.0.png
+Beta =   2.0 | MSE = 630.4122 | PSNR =  20.13 dB | Compressed = 60444 bits | CR =  34.70
+Beta =   4.0 | MSE = 813.2354 | PSNR =  19.03 dB | Compressed = 28216 bits | CR =  74.32
+  -> Saved: ../results/reconstructed_beta_4.0.png
+Beta =   8.0 | MSE = 968.9326 | PSNR =  18.27 dB | Compressed = 9094 bits | CR = 230.61
+Beta =  16.0 | MSE = 1083.7514 | PSNR =  17.78 dB | Compressed = 4218 bits | CR = 497.19
+  -> Saved: ../results/reconstructed_beta_16.0.png
+
+Part I Complete.
+
+============================================================
+PART II: Noisy Channel Transmission
+============================================================
+
+========================================
+PART II: Noisy Channel Transmission
+========================================
+Total bits to transmit: 4194304
+
+--- SNR = 0 dB ---
+  Scheme 1 (Direct): BER = 7.845044e-02, PSNR = 5.56 dB
+  Scheme 2 (Huffman): BER = 7.874656e-02, PSNR = 5.56 dB
+  Scheme 3 (LDPC): BER = 4.476275e-01, PSNR = 5.52 dB
+
+--- SNR = 2 dB ---
+  Scheme 1 (Direct): BER = 3.754759e-02, PSNR = 5.59 dB
+  Scheme 2 (Huffman): BER = 3.751206e-02, PSNR = 5.58 dB
+  Scheme 3 (LDPC): BER = 4.541826e-01, PSNR = 5.52 dB
+
+--- SNR = 4 dB ---
+  Scheme 1 (Direct): BER = 1.244473e-02, PSNR = 5.74 dB
+  Scheme 2 (Huffman): BER = 1.249433e-02, PSNR = 5.74 dB
+  Scheme 3 (LDPC): BER = 4.587824e-01, PSNR = 5.52 dB
+
+--- SNR = 6 dB ---
+  Scheme 1 (Direct): BER = 2.403736e-03, PSNR = 6.16 dB
+  Scheme 2 (Huffman): BER = 2.383709e-03, PSNR = 6.17 dB
+  Scheme 3 (LDPC): BER = 4.623205e-01, PSNR = 5.52 dB
+
+--- SNR = 8 dB ---
+  Scheme 1 (Direct): BER = 1.924038e-04, PSNR = 6.19 dB
+  Scheme 2 (Huffman): BER = 1.988411e-04, PSNR = 6.18 dB
+  Scheme 3 (LDPC): BER = 4.645371e-01, PSNR = 5.52 dB
+
+--- SNR = 10 dB ---
+  Scheme 1 (Direct): BER = 2.861023e-06, PSNR = 6.18 dB
+  Scheme 2 (Huffman): BER = 3.099442e-06, PSNR = 6.17 dB
+  Scheme 3 (LDPC): BER = 4.656109e-01, PSNR = 5.52 dB
+
+Part II Complete.
+
+============================================================
+PART III: Scalable Image Coding (FGS)
+============================================================
+
+========================================
+PART III: Scalable Image Coding (FGS)
+========================================
+Quantized range: [-11, 100], bits needed: 7
+Using 4 bits for base layer, remaining for enhancement
+Weak user SNR: 5 dB
+Strong user SNR: 15 dB
+Weak user channel capacity: 2.06 bits/symbol
+Strong user channel capacity: 5.03 bits/symbol
+
+Weak user PSNR: 7.64 dB
+Strong user PSNR: 8.45 dB
+
+Part III Complete.
+
+============================================================
+PART IV: OFDM Wireless Transmission
+============================================================
+
+========================================
+PART IV: OFDM Wireless Transmission
+========================================
+Total bits: 4194304, OFDM Nfft=64, CpLen=16
+Channel impulse response: h = [0.9, 0.4, 0.2]
+
+--- SNR = 0 dB ---
+  No channel coding: BER=1.116273e-01, PSNR=5.53 dB
+  With LDPC (no interleaver): BER=1.115537e-01, PSNR=5.53 dB
+  With LDPC + Interleaver: BER=1.745780e-01, PSNR=5.54 dB
+
+--- SNR = 2 dB ---
+  No channel coding: BER=8.174348e-02, PSNR=5.53 dB
+  With LDPC (no interleaver): BER=8.156681e-02, PSNR=5.53 dB
+  With LDPC + Interleaver: BER=1.502092e-01, PSNR=5.55 dB
+
+--- SNR = 4 dB ---
+  No channel coding: BER=6.606531e-02, PSNR=5.53 dB
+  With LDPC (no interleaver): BER=6.595540e-02, PSNR=5.54 dB
+  With LDPC + Interleaver: BER=1.376777e-01, PSNR=5.54 dB
+
+--- SNR = 6 dB ---
+  No channel coding: BER=6.083775e-02, PSNR=5.53 dB
+  With LDPC (no interleaver): BER=6.090975e-02, PSNR=5.53 dB
+  With LDPC + Interleaver: BER=1.337733e-01, PSNR=5.53 dB
+
+--- SNR = 8 dB ---
+  No channel coding: BER=5.989003e-02, PSNR=5.53 dB
+  With LDPC (no interleaver): BER=5.985785e-02, PSNR=5.53 dB
+  With LDPC + Interleaver: BER=1.331751e-01, PSNR=5.52 dB
+
+--- SNR = 10 dB ---
+  No channel coding: BER=5.980849e-02, PSNR=5.53 dB
+  With LDPC (no interleaver): BER=5.988050e-02, PSNR=5.53 dB
+  With LDPC + Interleaver: BER=1.331074e-01, PSNR=5.52 dB
+
+Part IV Complete.
+
+============================================================
+PART V: Distributed Source Coding
+============================================================
+
+========================================
+PART V: Distributed Source Coding
+       (Slepian-Wolf Coding)
+========================================
+
+--- Slepian-Wolf Theorem ---
+For two correlated sources X and Y:
+  R_X >= H(X|Y)
+  R_Y >= H(Y|X)
+  R_X + R_Y >= H(X,Y)
+Separate encoding, joint decoding.
+
+--- Hamming Distance ---
+d_H(x,y) = sum_i (x_i XOR y_i)
+Measures correlation between two binary sources.
+
+--- Correlation Level: 0.010 ---
+Hamming distance: 2761 (1.0532%)
+{Incorrect dimensions for matrix multiplication. Check that the number of columns in the first matrix matches the number of rows in the second matrix. To operate on each
+element of the matrix individually, use TIMES (.*) for elementwise multiplication.
+
+Error in Part5_DistributedSourceCoding (line 61)
+        syndrome_x = mod(x_blocks * H', 2);
+                         ^^^^^^^^
+Error in main (line 113)
+results5 = Part5_DistributedSourceCoding(im, correlation_levels);
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+} 
+============================================================
+Cross-Layer Analysis of Image Communication Systems
+============================================================
+
+Loading Lena image...
+Lena not found. Loading cameraman.tif from MATLAB toolbox...
+Loaded and resized cameraman.tif to 512x512
+Image size: 512 x 512
+
+============================================================
+PART I: Lossy Image Coding (JPEG-like)
+============================================================
+
+========================================
+PART I: Lossy Image Coding (JPEG-like)
+========================================
+Beta =   0.5 | MSE =   3.8171 | PSNR =  42.31 dB | Compressed = 36030 bits | CR =  58.21
+  -> Saved: ../results/reconstructed_beta_0.5.png
+Beta =   1.0 | MSE =   7.5297 | PSNR =  39.36 dB | Compressed = 24564 bits | CR =  85.38
+  -> Saved: ../results/reconstructed_beta_1.0.png
+Beta =   2.0 | MSE =  15.1247 | PSNR =  36.33 dB | Compressed = 16908 bits | CR = 124.03
+Beta =   4.0 | MSE =  32.7069 | PSNR =  32.98 dB | Compressed = 11510 bits | CR = 182.20
+  -> Saved: ../results/reconstructed_beta_4.0.png
+Beta =   8.0 | MSE =  75.4152 | PSNR =  29.36 dB | Compressed = 7885 bits | CR = 265.97
+Beta =  16.0 | MSE = 194.5847 | PSNR =  25.24 dB | Compressed = 5189 bits | CR = 404.15
+  -> Saved: ../results/reconstructed_beta_16.0.png
+
+Part I Complete.
+
+============================================================
+PART II: Noisy Channel Transmission
+============================================================
+
+========================================
+PART II: Noisy Channel Transmission
+========================================
+Total bits to transmit: 4194304
+
+--- SNR = 0 dB ---
+  Scheme 1 (Direct): BER = 7.849765e-02, PSNR = 5.13 dB
+  Scheme 2 (Huffman): BER = 7.874370e-02, PSNR = 5.13 dB
+  Scheme 3 (LDPC): BER = 4.662561e-01, PSNR = 5.09 dB
+
+--- SNR = 2 dB ---
+  Scheme 1 (Direct): BER = 3.759408e-02, PSNR = 5.16 dB
+  Scheme 2 (Huffman): BER = 3.744364e-02, PSNR = 5.16 dB
+  Scheme 3 (LDPC): BER = 4.751127e-01, PSNR = 5.09 dB
+
+--- SNR = 4 dB ---
+  Scheme 1 (Direct): BER = 1.242232e-02, PSNR = 5.31 dB
+  Scheme 2 (Huffman): BER = 1.249480e-02, PSNR = 5.32 dB
+  Scheme 3 (LDPC): BER = 4.820831e-01, PSNR = 5.09 dB
+
+--- SNR = 6 dB ---
+  Scheme 1 (Direct): BER = 2.415419e-03, PSNR = 5.86 dB
+  Scheme 2 (Huffman): BER = 2.382517e-03, PSNR = 5.83 dB
+  Scheme 3 (LDPC): BER = 4.876699e-01, PSNR = 5.09 dB
+
+--- SNR = 8 dB ---
+  Scheme 1 (Direct): BER = 1.928806e-04, PSNR = 5.81 dB
+  Scheme 2 (Huffman): BER = 1.959801e-04, PSNR = 5.79 dB
+  Scheme 3 (LDPC): BER = 4.906099e-01, PSNR = 5.10 dB
+
+--- SNR = 10 dB ---
+  Scheme 1 (Direct): BER = 2.861023e-06, PSNR = 5.77 dB
+  Scheme 2 (Huffman): BER = 3.099442e-06, PSNR = 5.78 dB
+  Scheme 3 (LDPC): BER = 4.916744e-01, PSNR = 5.10 dB
+{Error using uiputfile (line 103)
+Creating dialog boxes that block execution is not supported when MATLAB is in a configuration that is non-interactive or disables window display.
+
+Error in filemenufcn>localSaveExport (line 258)
+    [newfile, newpath, typevalue] = uiputfile(filter, getString(message('MATLAB:uistring:filemenufcn:TitleSaveAs')),filename);
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in filemenufcn (line 49)
+        localSaveExport(hfig, false)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in filemenufcn>localSave (line 110)
+  filemenufcn(hfig,'FileSaveAs');
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in filemenufcn (line 47)
+        localSave(hfig)
+        ^^^^^^^^^^^^^^^
+} 
+Error using matlab.ui.internal.controller.WebToolMixinController/fireActionEvent (line 220)
+Error while evaluating PushTool ClickedCallback.
+
+
+Part II Complete.
+
+============================================================
+PART III: Scalable Image Coding (FGS)
+============================================================
+
+========================================
+PART III: Scalable Image Coding (FGS)
+========================================
+Quantized range: [-55, 120], bits needed: 8
+Using 4 bits for base layer, remaining for enhancement
+Weak user SNR: 5 dB
+Strong user SNR: 15 dB
+Weak user channel capacity: 2.06 bits/symbol
+Strong user channel capacity: 5.03 bits/symbol
+
+Weak user PSNR: 6.68 dB
+Strong user PSNR: 7.39 dB
+
+Part III Complete.
+
+============================================================
+PART IV: OFDM Wireless Transmission
+============================================================
+
+========================================
+PART IV: OFDM Wireless Transmission
+========================================
+Total bits: 4194304, OFDM Nfft=64, CpLen=16
+Channel impulse response: h = [0.9, 0.4, 0.2]
+
+--- SNR = 0 dB ---
+  No channel coding: BER=9.425640e-02, PSNR=5.10 dB
+  With LDPC (no interleaver): BER=9.430051e-02, PSNR=5.10 dB
+  With LDPC + Interleaver: BER=1.294777e-01, PSNR=5.11 dB
+
+--- SNR = 2 dB ---
+  No channel coding: BER=6.163836e-02, PSNR=5.10 dB
+  With LDPC (no interleaver): BER=6.160975e-02, PSNR=5.09 dB
+  With LDPC + Interleaver: BER=1.001241e-01, PSNR=5.11 dB
+
+--- SNR = 4 dB ---
+  No channel coding: BER=4.404521e-02, PSNR=5.10 dB
+  With LDPC (no interleaver): BER=4.427290e-02, PSNR=5.10 dB
+  With LDPC + Interleaver: BER=8.447528e-02, PSNR=5.12 dB
+
+--- SNR = 6 dB ---
+  No channel coding: BER=3.821325e-02, PSNR=5.10 dB
+  With LDPC (no interleaver): BER=3.810573e-02, PSNR=5.10 dB
+  With LDPC + Interleaver: BER=7.925701e-02, PSNR=5.10 dB
+
+--- SNR = 8 dB ---
+  No channel coding: BER=3.715777e-02, PSNR=5.10 dB
+  With LDPC (no interleaver): BER=3.720737e-02, PSNR=5.09 dB
+  With LDPC + Interleaver: BER=7.836890e-02, PSNR=5.09 dB
+
+--- SNR = 10 dB ---
+  No channel coding: BER=3.707814e-02, PSNR=5.10 dB
+  With LDPC (no interleaver): BER=3.707910e-02, PSNR=5.10 dB
+  With LDPC + Interleaver: BER=7.843447e-02, PSNR=5.09 dB
+
+Part IV Complete.
+
+============================================================
+PART V: Distributed Source Coding
+============================================================
+
+========================================
+PART V: Distributed Source Coding
+       (Slepian-Wolf Coding)
+========================================
+
+--- Slepian-Wolf Theorem ---
+For two correlated sources X and Y:
+  R_X >= H(X|Y)
+  R_Y >= H(Y|X)
+  R_X + R_Y >= H(X,Y)
+Separate encoding, joint decoding.
+
+--- Hamming Distance ---
+d_H(x,y) = sum_i (x_i XOR y_i)
+Measures correlation between two binary sources.
+
+--- Correlation Level: 0.010 ---
+Hamming distance: 2785 (1.0624%)
+Slepian-Wolf rate (syndrome/X): 0.750
+Reconstruction accuracy: 0.9894
+
+--- Correlation Level: 0.050 ---
+Hamming distance: 13239 (5.0503%)
+Slepian-Wolf rate (syndrome/X): 0.750
+Reconstruction accuracy: 0.9495
+
+--- Correlation Level: 0.150 ---
+Hamming distance: 39329 (15.0028%)
+Slepian-Wolf rate (syndrome/X): 0.750
+Reconstruction accuracy: 0.8500
+
+--- Comparison of Channel Codes for DSC ---
+Hamming (7,4):  Rate=4/7=0.571,  Corrects 1 error
+LDPC (20,10):   Rate=10/20=0.50, Corrects multiple errors
+Turbo codes:    Rate~1/3-1/2,    Near Shannon limit
+Polar codes:    Rate=1/2,        Capacity-achieving
+Low correlation -> need stronger channel codes
+High correlation -> simple Hamming may suffice
+
+Part V Complete.
+
+============================================================
+SIMULATION COMPLETE
+============================================================
+
+Results Summary:
+  Part I:   Compression ratios from 58.2 to 404.2
+            PSNR from 25.24 to 42.31 dB
+  Part II:  BER range: 2.86e-06 to 7.85e-02 (Scheme 1)
+            BER range: 4.66e-01 to 4.92e-01 (Scheme 3)
+  Part III: Weak user PSNR = 6.68 dB
+            Strong user PSNR = 7.39 dB
+  Part IV:  OFDM BER with interleaver: 7.84e-02 to 1.29e-01
+  Part V:   DSC accuracy from 85.0% to 98.9%
+
+All results saved to ../results/
+============================================================

@@ -18,7 +18,7 @@ function results = Part2_NoisyChannel(im, snr_dB_range)
          72 92 95 98 113 100 103 99];
 
     [M, N] = size(im);
-    im = im2double(im);
+    im = double(im);
 
     fprintf('========================================\n');
     fprintf('PART II: Noisy Channel Transmission\n');
@@ -69,7 +69,7 @@ function results = Part2_NoisyChannel(im, snr_dB_range)
         results.ber_scheme1(s_idx) = err_s1 / length(tx_bits);
 
         recon_s1 = reconstruct_from_bits(rx_bits_s1, M, N, Q_beta);
-        results.psnr_scheme1(s_idx) = 10*log10(1/mean((im(:)-recon_s1(:)).^2));
+        results.psnr_scheme1(s_idx) = 10*log10(255^2/mean((im(:)-recon_s1(:)).^2));
         fprintf('  Scheme 1 (Direct): BER = %e, PSNR = %.2f dB\n', ...
             results.ber_scheme1(s_idx), results.psnr_scheme1(s_idx));
 
@@ -80,7 +80,7 @@ function results = Part2_NoisyChannel(im, snr_dB_range)
         err_s2 = sum(huff_start_bits ~= huff_bits_rx);
         results.ber_scheme2(s_idx) = err_s2 / length(huff_start_bits);
         recon_s2 = reconstruct_from_bits(huff_bits_rx, M, N, Q_beta);
-        results.psnr_scheme2(s_idx) = 10*log10(1/mean((im(:)-recon_s2(:)).^2));
+        results.psnr_scheme2(s_idx) = 10*log10(255^2/mean((im(:)-recon_s2(:)).^2));
         fprintf('  Scheme 2 (Huffman): BER = %e, PSNR = %.2f dB\n', ...
             results.ber_scheme2(s_idx), results.psnr_scheme2(s_idx));
 
@@ -104,12 +104,13 @@ function results = Part2_NoisyChannel(im, snr_dB_range)
         ldpc_decoded = zeros(size(data_for_ldpc));
         for blk = 1:length(coded_ldpc)/20
             seg = ldpc_rx((blk-1)*20+1:blk*20);
-            ldpc_decoded((blk-1)*10+1:blk*10) = ldpc_decode(seg, ldpc_H, 20);
+            dec_all = ldpc_decode(seg, ldpc_H, 20);
+            ldpc_decoded((blk-1)*10+1:blk*10) = dec_all(1:10);
         end
         err_s3 = sum(data_for_ldpc ~= ldpc_decoded);
         results.ber_scheme3(s_idx) = err_s3 / length(data_for_ldpc);
         recon_s3 = reconstruct_from_bits(ldpc_decoded, M, N, Q_beta);
-        results.psnr_scheme3(s_idx) = 10*log10(1/mean((im(:)-recon_s3(:)).^2));
+        results.psnr_scheme3(s_idx) = 10*log10(255^2/mean((im(:)-recon_s3(:)).^2));
         fprintf('  Scheme 3 (LDPC): BER = %e, PSNR = %.2f dB\n', ...
             results.ber_scheme3(s_idx), results.psnr_scheme3(s_idx));
     end
@@ -135,7 +136,8 @@ function results = Part2_NoisyChannel(im, snr_dB_range)
     legend('Scheme 1: Direct', 'Scheme 2: Huffman', 'Scheme 3: LDPC', 'Location', 'southeast');
     grid on;
 
-    saveas(gcf, '../results/part2_ber_psnr_vs_snr.png');
+    print(gcf, '../results/part2_ber_psnr_vs_snr.png', '-dpng');
+    close(gcf);
 
     fprintf('\nPart II Complete.\n\n');
 end
@@ -164,5 +166,5 @@ function recon = reconstruct_from_bits(bits, M, N, Q_beta)
         end
     end
     recon(recon < 0) = 0;
-    recon(recon > 1) = 1;
+    recon(recon > 255) = 255;
 end

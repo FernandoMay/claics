@@ -18,7 +18,7 @@ function results = Part4_OFDM_Transmission(im, snr_dB_range)
          72 92 95 98 113 100 103 99];
 
     [M, N] = size(im);
-    im = im2double(im);
+    im = double(im);
 
     fprintf('========================================\n');
     fprintf('PART IV: OFDM Wireless Transmission\n');
@@ -77,7 +77,7 @@ function results = Part4_OFDM_Transmission(im, snr_dB_range)
         err_no = sum(tx_bits(1:min_len) ~= rx_bits_direct(1:min_len));
         results.ber_no_channel(s_idx) = err_no / min_len;
         recon_no = reconstruct_ofdm(rx_bits_direct, M, N, Q_beta);
-        results.psnr_no_channel(s_idx) = 10*log10(1/mean((im(:)-recon_no(:)).^2));
+        results.psnr_no_channel(s_idx) = 10*log10(255^2/mean((im(:)-recon_no(:)).^2));
         fprintf('  No channel coding: BER=%e, PSNR=%.2f dB\n', ...
             results.ber_no_channel(s_idx), results.psnr_no_channel(s_idx));
 
@@ -95,7 +95,7 @@ function results = Part4_OFDM_Transmission(im, snr_dB_range)
         err_with = sum(tx_bits(1:min_len2) ~= rx_bits2(1:min_len2));
         results.ber_with_channel(s_idx) = err_with / min_len2;
         recon_with = reconstruct_ofdm(rx_bits2, M, N, Q_beta);
-        results.psnr_with_channel(s_idx) = 10*log10(1/mean((im(:)-recon_with(:)).^2));
+        results.psnr_with_channel(s_idx) = 10*log10(255^2/mean((im(:)-recon_with(:)).^2));
         fprintf('  With LDPC (no interleaver): BER=%e, PSNR=%.2f dB\n', ...
             results.ber_with_channel(s_idx), results.psnr_with_channel(s_idx));
 
@@ -115,7 +115,7 @@ function results = Part4_OFDM_Transmission(im, snr_dB_range)
         err_int = sum(tx_bits(1:min_len3) ~= rx_deinterleaved(1:min_len3));
         results.ber_channel_interleaved(s_idx) = err_int / min_len3;
         recon_int = reconstruct_ofdm(rx_deinterleaved, M, N, Q_beta);
-        results.psnr_channel_interleaved(s_idx) = 10*log10(1/mean((im(:)-recon_int(:)).^2));
+        results.psnr_channel_interleaved(s_idx) = 10*log10(255^2/mean((im(:)-recon_int(:)).^2));
         fprintf('  With LDPC + Interleaver: BER=%e, PSNR=%.2f dB\n', ...
             results.ber_channel_interleaved(s_idx), results.psnr_channel_interleaved(s_idx));
     end
@@ -141,7 +141,7 @@ function results = Part4_OFDM_Transmission(im, snr_dB_range)
     legend('No Coding', 'With LDPC', 'LDPC+Interleaver', 'Location', 'southeast');
     grid on;
 
-    saveas(gcf, '../results/part4_ofdm_performance.png');
+    print(gcf, '../results/part4_ofdm_performance.png', '-dpng');
 
     fprintf('\nPart IV Complete.\n\n');
 end
@@ -170,5 +170,5 @@ function recon = reconstruct_ofdm(bits, M, N, Q_beta)
         end
     end
     recon(recon < 0) = 0;
-    recon(recon > 1) = 1;
+    recon(recon > 255) = 255;
 end
