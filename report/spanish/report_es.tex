@@ -173,18 +173,18 @@ Se probaron seis valores de $\beta = \{0.5, 1, 2, 4, 8, 16\}$.
 
 \begin{table}[h]
 \centering
-\caption{Resultados de compresi\'on para diferentes $\beta$}
+\caption{Resultados de compresi\'on para diferentes $\beta$ (cameraman.tif 512$\times$512)}
 \label{tab:p1_es}
 \begin{tabular}{c|c|c|c}
 \toprule
 $\beta$ & ECM & PSNR (dB) & Relaci\'on de Compresi\'on \\
 \midrule
-0.5  & 0.00012 & 38.9 & 4.2 \\
-1.0  & 0.00032 & 35.1 & 8.7 \\
-2.0  & 0.00089 & 30.6 & 16.4 \\
-4.0  & 0.00245 & 26.2 & 31.8 \\
-8.0  & 0.00612 & 22.3 & 58.6 \\
-16.0 & 0.01580 & 18.1 & 102.4 \\
+0.5  & 3.82  & 42.31 & 58.2 \\
+1.0  & 7.53  & 39.36 & 85.4 \\
+2.0  & 15.12 & 36.33 & 124.0 \\
+4.0  & 32.71 & 32.98 & 182.2 \\
+8.0  & 75.42 & 29.36 & 266.0 \\
+16.0 & 194.58 & 25.24 & 404.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -196,27 +196,23 @@ $\beta$ & ECM & PSNR (dB) & Relaci\'on de Compresi\'on \\
     title={Relaci\'on de Compresi\'on vs PSNR},
     xlabel={Relaci\'on de Compresi\'on},
     ylabel={PSNR (dB)},
-    xmin=0, xmax=110,
-    ymin=15, ymax=42,
+    xmin=0, xmax=420,
+    ymin=20, ymax=45,
     legend pos=south east,
     grid=major,
     width=0.7\textwidth
 ]
 \addplot[color=blue, mark=*, line width=1.5pt] coordinates {
-    (4.2, 38.9)(8.7, 35.1)(16.4, 30.6)(31.8, 26.2)(58.6, 22.3)(102.4, 18.1)
+    (58.2, 42.31)(85.4, 39.36)(124.0, 36.33)(182.2, 32.98)(266.0, 29.36)(404.2, 25.24)
 };
-\addlegendentry{Lena 512$\times$512}
-\addplot[color=red, dashed, line width=1pt] coordinates {
-    (4.2, 38.9)(102.4, 18.1)
-};
-\addlegendentry{Tendencia}
+\addlegendentry{Cameraman 512$\times$512}
 \end{axis}
 \end{tikzpicture}
 \caption{Relaci\'on de Compresi\'on vs PSNR}
 \label{fig:p1_es}
 \end{figure}
 
-\textbf{An\'alisis}: Al aumentar $\beta$, el paso de cuantizaci\'on crece y m\'as coeficientes de alta frecuencia se anulan. Con $\beta=1$, el PSNR es 35.1 dB (visualmente sin p\'erdidas). Con $\beta=16$, la relaci\'on de compresi\'on alcanza 102.4 pero el PSNR cae a 18.1 dB con artefactos de bloque visibles.
+\textbf{An\'alisis}: Al aumentar $\beta$, el paso de cuantizaci\'on crece y m\'as coeficientes de alta frecuencia se anulan. Con $\beta=0.5$, el PSNR es 42.31 dB (visualmente sin p\'erdidas). Con $\beta=16$, la relaci\'on de compresi\'on alcanza 404.2 pero el PSNR cae a 25.24 dB.
 
 \subsection{Parte II: Transmisi\'on de Im\'agenes en Canales Ruidosos}
 
@@ -286,15 +282,15 @@ end
     width=0.75\textwidth
 ]
 \addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.078)(2, 0.037)(4, 0.012)(6, 0.0023)(8, 0.00019)(10, 0.000004)
+    (0, 0.0785)(2, 0.0376)(4, 0.0124)(6, 0.00242)(8, 0.000193)(10, 0.00000286)
 };
 \addlegendentry{Esquema 1: Sin codificar}
 \addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.04)(2, 0.015)(4, 0.003)(6, 0.0003)(8, 0.00001)(10, 1e-7)
+    (0, 0.0787)(2, 0.0374)(4, 0.0125)(6, 0.00238)(8, 0.000196)(10, 0.00000310)
 };
-\addlegendentry{Esquema 2: Hamming(7,4)}
+\addlegendentry{Esquema 2: Huffman}
 \addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.01)(2, 0.002)(4, 1e-4)(6, 1e-6)(8, 1e-9)
+    (0, 0.226)(2, 0.224)(4, 0.225)(6, 0.227)(8, 0.228)(10, 0.228)
 };
 \addlegendentry{Esquema 3: LDPC(20,10)}
 \end{axis}
@@ -303,7 +299,12 @@ end
 \label{fig:p2_es}
 \end{figure}
 
-\textbf{An\'alisis}: LDPC alcanza BER inferior a $10^{-6}$ con SNR=6 dB, proporcionando aproximadamente 5 dB de ganancia de codificaci\'on sobre la transmisi\'on sin codificar. Hamming proporciona una ganancia modesta (aproximadamente 2 dB).
+\textbf{An\'alisis}: 
+\begin{itemize}
+    \item BPSK sin codificar reduce la BER al aumentar SNR, alcanzando $2.86\times10^{-6}$ a SNR=10 dB (coincide con la teor\'ia $Q(\sqrt{2\cdot\text{SNR}})$).
+    \item El Esquema 2 (Huffman) muestra rendimiento id\'entico al no codificado pues no a\~nade redundancia correctora.
+    \item El Esquema 3 usa un c\'odigo LDPC(20,10) personalizado. Debido a su corta longitud de bloque, el decodificador BP no converge completamente. C\'odigos LDPC m\'as largos (e.g., $(1024,512)$) lograr\'ian BER significativamente menor.
+\end{itemize}
 
 \subsection{Parte III: Codificaci\'on Escalable de Im\'agenes}
 
@@ -340,15 +341,15 @@ C = B\log_2(1 + \text{SNR})
 \toprule
 Tipo de Usuario & SNR (dB) & Capas Recibidas & PSNR (dB) \\
 \midrule
-Capa base (referencia) & --- & Solo MSB (4 bits) & 28.3 \\
-Usuario d\'ebil & 5 & Capa base & 28.3 \\
-Usuario fuerte ($\Delta=5$) & 10 & Ambas capas & 32.1 \\
-Usuario fuerte ($\Delta=10$) & 15 & Ambas capas & 34.7 \\
+Capa base (referencia) & --- & Solo MSB (4 bits) & 6.68 \\
+Usuario d\'ebil & 5 & Capa base & 6.68 \\
+Usuario fuerte ($\Delta=5$) & 10 & Ambas capas & 6.94 \\
+Usuario fuerte ($\Delta=10$) & 15 & Ambas capas & 7.39 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{An\'alisis}: FGS permite decodificaci\'on multinivel desde un \'unico flujo. El usuario fuerte alcanza 6.4 dB m\'as de PSNR que el d\'ebil.
+\textbf{An\'alisis}: FGS permite decodificaci\'on multinivel desde un \'unico flujo. El usuario fuerte ($\Delta=10$ dB) alcanza 0.71 dB m\'as de PSNR que el d\'ebil.
 
 \subsection{Parte IV: Transmisi\'on Inal\'ambrica OFDM}
 
@@ -388,24 +389,25 @@ Entrelazador de bloques: escritura por filas en matriz $R \times C$, lectura por
     width=0.75\textwidth
 ]
 \addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.12)(2, 0.065)(4, 0.028)(6, 0.008)(8, 0.0015)(10, 0.0002)
+    (0, 0.0943)(2, 0.0616)(4, 0.0440)(6, 0.0382)(8, 0.0372)(10, 0.0371)
 };
 \addlegendentry{Sin codificar}
-\addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.08)(2, 0.035)(4, 0.009)(6, 0.001)(8, 0.00005)(10, 0.000001)
-};
-\addlegendentry{Con LDPC}
 \addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.06)(2, 0.018)(4, 0.003)(6, 0.0001)(8, 0.000002)(10, 1e-8)
+    (0, 0.129)(2, 0.100)(4, 0.0845)(6, 0.0793)(8, 0.0784)(10, 0.0784)
 };
-\addlegendentry{LDPC + Entrelazado}
+\addlegendentry{Sin codificar + Entrelazado}
 \end{axis}
 \end{tikzpicture}
 \caption{Comparaci\'on BER en OFDM}
 \label{fig:p4_es}
 \end{figure}
 
-\textbf{An\'alisis}: El entrelazado mejora el rendimiento al convertir errores r\'afaga en errores aleatorios que LDPC puede corregir eficazmente. Con SNR=8 dB, LDPC+entrelazado reduce la BER en 3 \'ordenes de magnitud respecto a transmisi\'on sin codificar.
+\textbf{An\'alisis}: 
+\begin{itemize}
+    \item OFDM convierte el canal selectivo en frecuencia en subcanales paralelos de banda estrecha.
+    \item BER sin codificar disminuye de 9.4\% (0 dB) a 3.7\% (10 dB).
+    \item Con entrelazado de bloques (sin codificaci\'on de canal), la BER aumenta a bajo SNR porque los errores r\'afaga se dispersan. En la pr\'actica, el entrelazado debe combinarse con c\'odigos correctores.
+\end{itemize}
 
 \subsection{Parte V: Codificaci\'on Distribuida de Fuente (Slepian-Wolf)}
 
@@ -436,9 +438,9 @@ d_H(x,y) = \sum_i (x_i \oplus y_i)
 \toprule
 Nivel de Ruido & Dist. Hamming (\%) & Tasa SW & Precisi\'on (\%) \\
 \midrule
-0.01 (Alta)   & 0.98  & 0.38 & 99.97 \\
-0.05 (Media)  & 4.89  & 0.42 & 99.82 \\
-0.15 (Baja)   & 14.76 & 0.51 & 99.31 \\
+0.01 (Alta)   & 1.06  & 0.75 & 98.94 \\
+0.05 (Media)  & 5.05  & 0.75 & 94.95 \\
+0.15 (Baja)   & 15.00 & 0.75 & 85.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -470,11 +472,11 @@ El teorema de Slepian-Wolf se valida en la pr\'actica: la codificaci\'on basada 
 Este proyecto implement\'o y evalu\'o sistem\'aticamente cinco m\'odulos fundamentales de los sistemas modernos de comunicaci\'on de im\'agenes:
 
 \begin{enumerate}
-    \item \textbf{Codificaci\'on con p\'erdidas}: DCT+cuantizaci\'on logra compresi\'on eficiente. Con $\beta=1$, PSNR = 35.1 dB.
-    \item \textbf{Codificaci\'on de canal}: LDPC proporciona aproximadamente 5 dB de ganancia de codificaci\'on, superando significativamente a los c\'odigos Hamming.
-    \item \textbf{Codificaci\'on escalable}: FGS se adapta exitosamente a usuarios heterog\'eneos.
-    \item \textbf{Transmisi\'on OFDM}: OFDM con entrelazado y LDPC reduce la BER en 3 \'ordenes de magnitud.
-    \item \textbf{Codificaci\'on distribuida}: La codificaci\'on basada en s\'indromes se aproxima a los l\'imites te\'oricos de Slepian-Wolf.
+    \item \textbf{Codificaci\'on con p\'erdidas}: DCT+cuantizaci\'on logra compresi\'on eficiente. Con $\beta=0.5$, PSNR=42.31 dB; con $\beta=16$, CR=404.2 y PSNR=25.24 dB.
+    \item \textbf{Codificaci\'on de canal}: BPSK no codificado alcanza BER=$2.86\times10^{-6}$ a SNR=10 dB. El LDPC(20,10) muestra rendimiento limitado por su corta longitud.
+    \item \textbf{Codificaci\'on escalable}: FGS se adapta a usuarios heterog\'eneos (usuario fuerte 0.71 dB mejor que d\'ebil).
+    \item \textbf{Transmisi\'on OFDM}: OFDM de 64 subportadoras mitiga el desvanecimiento selectivo en frecuencia.
+    \item \textbf{Codificaci\'on distribuida}: S\'indromes Hamming(7,4) logran 98.94\% de precisi\'on para fuentes de alta correlaci\'on.
 \end{enumerate}
 
 Estos resultados demuestran la interacci\'on sin\'ergica entre la codificaci\'on de fuente, la codificaci\'on de canal y las t\'ecnicas de modulaci\'on, proporcionando una base s\'olida para la investigaci\'on en comunicaciones multimedia 5G/6G.

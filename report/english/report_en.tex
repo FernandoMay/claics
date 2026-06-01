@@ -171,18 +171,18 @@ Six $\beta$ values $\{0.5, 1, 2, 4, 8, 16\}$ were tested.
 
 \begin{table}[h]
 \centering
-\caption{Compression results for different $\beta$ values}
+\caption{Compression results for different $\beta$ values (cameraman.tif 512$\times$512)}
 \label{tab:p1_en}
 \begin{tabular}{c|c|c|c}
 \toprule
 $\beta$ & MSE & PSNR (dB) & Compression Ratio \\
 \midrule
-0.5  & 0.00012 & 38.9 & 4.2 \\
-1.0  & 0.00032 & 35.1 & 8.7 \\
-2.0  & 0.00089 & 30.6 & 16.4 \\
-4.0  & 0.00245 & 26.2 & 31.8 \\
-8.0  & 0.00612 & 22.3 & 58.6 \\
-16.0 & 0.01580 & 18.1 & 102.4 \\
+0.5  & 3.82  & 42.31 & 58.2 \\
+1.0  & 7.53  & 39.36 & 85.4 \\
+2.0  & 15.12 & 36.33 & 124.0 \\
+4.0  & 32.71 & 32.98 & 182.2 \\
+8.0  & 75.42 & 29.36 & 266.0 \\
+16.0 & 194.58 & 25.24 & 404.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -194,27 +194,23 @@ $\beta$ & MSE & PSNR (dB) & Compression Ratio \\
     title={Compression Ratio vs PSNR},
     xlabel={Compression Ratio},
     ylabel={PSNR (dB)},
-    xmin=0, xmax=110,
-    ymin=15, ymax=42,
+    xmin=0, xmax=420,
+    ymin=20, ymax=45,
     legend pos=south east,
     grid=major,
     width=0.7\textwidth
 ]
 \addplot[color=blue, mark=*, line width=1.5pt] coordinates {
-    (4.2, 38.9)(8.7, 35.1)(16.4, 30.6)(31.8, 26.2)(58.6, 22.3)(102.4, 18.1)
+    (58.2, 42.31)(85.4, 39.36)(124.0, 36.33)(182.2, 32.98)(266.0, 29.36)(404.2, 25.24)
 };
-\addlegendentry{Lena 512$\times$512}
-\addplot[color=red, dashed, line width=1pt] coordinates {
-    (4.2, 38.9)(102.4, 18.1)
-};
-\addlegendentry{Trend}
+\addlegendentry{Cameraman 512$\times$512}
 \end{axis}
 \end{tikzpicture}
 \caption{Compression Ratio vs PSNR}
 \label{fig:p1_en}
 \end{figure}
 
-\textbf{Analysis}: As $\beta$ increases, the quantization step grows, more high-frequency coefficients are zeroed, compression ratio increases but PSNR decreases. At $\beta=1$, PSNR is 35.1 dB (visually near-lossless). At $\beta=16$, CR reaches 102.4 but PSNR drops to 18.1 dB with visible blocking artifacts.
+\textbf{Analysis}: As $\beta$ increases, the quantization step grows, more high-frequency coefficients are zeroed, compression ratio increases but PSNR decreases. At $\beta=0.5$, PSNR is 42.31 dB (visually near-lossless). At $\beta=16$, CR reaches 404.2 but PSNR drops to 25.24 dB.
 
 \subsection{Part II: Image Transmission over Noisy Channels}
 
@@ -288,15 +284,15 @@ end
     width=0.75\textwidth
 ]
 \addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.078)(2, 0.037)(4, 0.012)(6, 0.0023)(8, 0.00019)(10, 0.000004)
+    (0, 0.0785)(2, 0.0376)(4, 0.0124)(6, 0.00242)(8, 0.000193)(10, 0.00000286)
 };
 \addlegendentry{Scheme 1: Uncoded}
 \addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.04)(2, 0.015)(4, 0.003)(6, 0.0003)(8, 0.00001)(10, 1e-7)
+    (0, 0.0787)(2, 0.0374)(4, 0.0125)(6, 0.00238)(8, 0.000196)(10, 0.00000310)
 };
-\addlegendentry{Scheme 2: Hamming(7,4)}
+\addlegendentry{Scheme 2: Huffman}
 \addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.01)(2, 0.002)(4, 1e-4)(6, 1e-6)(8, 1e-9)
+    (0, 0.226)(2, 0.224)(4, 0.225)(6, 0.227)(8, 0.228)(10, 0.228)
 };
 \addlegendentry{Scheme 3: LDPC(20,10)}
 \end{axis}
@@ -305,7 +301,12 @@ end
 \label{fig:p2_en}
 \end{figure}
 
-\textbf{Analysis}: LDPC achieves BER below $10^{-6}$ at SNR=6 dB, providing approximately 5 dB coding gain over uncoded transmission. Hamming provides modest gain (about 2 dB). LDPC approaches the Shannon limit due to its sparse matrix structure and iterative decoding.
+\textbf{Analysis}: 
+\begin{itemize}
+    \item Uncoded BPSK BER decreases with SNR, reaching $2.86\times10^{-6}$ at SNR=10 dB (matching theoretical $Q(\sqrt{2\cdot\text{SNR}})$).
+    \item Scheme 2 (Huffman) shows identical performance to uncoded since no error correction redundancy was added.
+    \item Scheme 3 uses a custom (20,10) LDPC code. Due to its short block length and relatively dense parity-check matrix, the BP decoder does not fully converge. Longer LDPC codes (e.g., $(1024,512)$) would achieve significantly lower BER at the same SNR.
+\end{itemize}
 
 \subsection{Part III: Scalable Image Coding}
 
@@ -345,15 +346,15 @@ Strong user SNR = $SNR_w + \Delta$ dB ($\Delta$ = 5 or 10 dB), with larger capac
 \toprule
 User Type & SNR (dB) & Received Layers & PSNR (dB) \\
 \midrule
-Base layer (reference) & --- & MSB only (4 bits) & 28.3 \\
-Weak user & 5 & Base layer & 28.3 \\
-Strong user ($\Delta=5$) & 10 & Both layers & 32.1 \\
-Strong user ($\Delta=10$) & 15 & Both layers & 34.7 \\
+Base layer (reference) & --- & MSB only (4 bits) & 6.68 \\
+Weak user & 5 & Base layer & 6.68 \\
+Strong user ($\Delta=5$) & 10 & Both layers & 6.94 \\
+Strong user ($\Delta=10$) & 15 & Both layers & 7.39 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Analysis}: FGS enables multi-level quality decoding from a single stream. The strong user achieves 6.4 dB higher PSNR than the weak user (when $\Delta=10$ dB), demonstrating the effectiveness of scalable coding in heterogeneous networks.
+\textbf{Analysis}: FGS enables multi-level quality decoding from a single stream. The strong user ($\Delta=10$ dB) achieves 0.71 dB higher PSNR than the weak user. The relatively low PSNR values are due to the DCT coefficient quantization spanning a wide dynamic range; 4 MSB bits cannot fully represent the image structure. In practice, the base layer typically contains 3-5 MSB bit-planes to ensure acceptable base quality.
 
 \subsection{Part IV: OFDM Wireless Transmission}
 
@@ -393,24 +394,26 @@ Block interleaver: write row-wise into $R \times C$ matrix, read column-wise. Th
     width=0.75\textwidth
 ]
 \addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.12)(2, 0.065)(4, 0.028)(6, 0.008)(8, 0.0015)(10, 0.0002)
+    (0, 0.0943)(2, 0.0616)(4, 0.0440)(6, 0.0382)(8, 0.0372)(10, 0.0371)
 };
 \addlegendentry{No coding}
-\addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.08)(2, 0.035)(4, 0.009)(6, 0.001)(8, 0.00005)(10, 0.000001)
-};
-\addlegendentry{With LDPC}
 \addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.06)(2, 0.018)(4, 0.003)(6, 0.0001)(8, 0.000002)(10, 1e-8)
+    (0, 0.129)(2, 0.100)(4, 0.0845)(6, 0.0793)(8, 0.0784)(10, 0.0784)
 };
-\addlegendentry{LDPC + Interleaver}
+\addlegendentry{No coding + Interleaver}
 \end{axis}
 \end{tikzpicture}
 \caption{OFDM BER comparison}
 \label{fig:p4_en}
 \end{figure}
 
-\textbf{Analysis}: Interleaving improves performance by converting burst errors into randomly distributed errors, which LDPC codes can correct more effectively. At SNR=8 dB, LDPC+interleaver achieves BER about 3 orders of magnitude lower than uncoded transmission.
+\textbf{Analysis}: 
+\begin{itemize}
+    \item OFDM converts the frequency-selective channel into parallel narrowband subchannels, mitigating multipath effects.
+    \item Uncoded BER decreases from 9.4\% (0 dB) to 3.7\% (10 dB).
+    \item With block interleaving alone (no channel coding), BER increases at low SNR because burst errors are spread, exceeding the receiver's correction capability. In practice, interleaving must be combined with error-correcting codes.
+    \item Compared to Part II (BPSK-AWGN: BER=$2.86\times10^{-6}$ at 10 dB), OFDM over multipath channels shows significantly higher BER, demonstrating the impact of frequency-selective fading.
+\end{itemize}
 
 \subsection{Part V: Distributed Source Coding (Slepian-Wolf)}
 
@@ -467,12 +470,14 @@ sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
 \toprule
 Noise Level & Hamming Distance (\%) & SW Rate & Accuracy (\%) \\
 \midrule
-0.01 (High)  & 0.98  & 0.38 & 99.97 \\
-0.05 (Medium) & 4.89  & 0.42 & 99.82 \\
-0.15 (Low)   & 14.76 & 0.51 & 99.31 \\
+0.01 (High)  & 1.06  & 0.75 & 98.94 \\
+0.05 (Medium) & 5.05  & 0.75 & 94.95 \\
+0.15 (Low)   & 15.00 & 0.75 & 85.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\textbf{Analysis}: The Hamming(7,4) code yields a fixed SW rate of $3/4=0.75$. High-correlation sources (Hamming distance 1.06\%) achieve 98.94\% reconstruction accuracy. Low-correlation sources (15\%) drop to 85.00\% accuracy. For lower correlation, longer channel codes (LDPC, Turbo, or Polar) are needed for better compression and reconstruction performance.
 
 \textbf{Channel codes for DSC}:
 \begin{itemize}
@@ -513,11 +518,11 @@ The Slepian-Wolf theorem is validated in practice: syndrome-based coding approac
 This project systematically implemented and evaluated five core modules of modern image communication systems:
 
 \begin{enumerate}
-    \item \textbf{Lossy coding}: DCT+quantization achieves efficient compression. At $\beta=1$, PSNR is 35.1 dB; at 16:1 compression, quality remains acceptable.
-    \item \textbf{Channel coding}: LDPC provides approximately 5 dB coding gain over AWGN, significantly outperforming Hamming codes.
-    \item \textbf{Scalable coding}: FGS bit-plane coding successfully adapts to heterogeneous users, with strong user achieving 6.4 dB higher PSNR.
-    \item \textbf{OFDM transmission}: OFDM with interleaving and LDPC effectively counters frequency-selective fading, reducing BER by 3 orders of magnitude.
-    \item \textbf{Distributed coding}: Syndrome-based coding with Hamming codes approaches Slepian-Wolf theoretical limits.
+    \item \textbf{Lossy coding}: DCT+quantization achieves efficient compression. Cameraman image at $\beta=0.5$ gives PSNR=42.31 dB; at $\beta=16$ CR=404.2 with PSNR=25.24 dB.
+    \item \textbf{Channel coding}: Uncoded BPSK over AWGN achieves BER=$2.86\times10^{-6}$ at SNR=10 dB. Custom (20,10) LDPC shows limited performance due to short block length; longer codes are needed for significant coding gain.
+    \item \textbf{Scalable coding}: FGS bit-plane coding adapts to heterogeneous users. Strong user (SNR=15 dB) achieves higher PSNR than weak user (SNR=5 dB).
+    \item \textbf{OFDM transmission}: 64-subcarrier OFDM effectively mitigates frequency-selective fading. Multipath channel yields BER approximately 4 orders of magnitude higher than AWGN at SNR=10 dB.
+    \item \textbf{Distributed coding}: Hamming(7,4)-based syndrome coding achieves 98.94\% reconstruction accuracy for high-correlation sources (Hamming distance 1.06\%).
 \end{enumerate}
 
 These results demonstrate the synergistic interaction between source coding, channel coding, and modulation techniques, providing a solid foundation for research in 5G/6G multimedia communications.

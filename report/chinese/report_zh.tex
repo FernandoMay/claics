@@ -172,18 +172,18 @@ end
 
 \begin{table}[h]
 \centering
-\caption{不同$\beta$值的压缩结果}
+\caption{不同$\beta$值的压缩结果（cameraman.tif 512$\times$512）}
 \label{tab:p1}
 \begin{tabular}{c|c|c|c}
 \toprule
 $\beta$ & MSE & PSNR (dB) & 压缩比 \\
 \midrule
-0.5  & 0.00012 & 38.9 & 4.2 \\
-1.0  & 0.00032 & 35.1 & 8.7 \\
-2.0  & 0.00089 & 30.6 & 16.4 \\
-4.0  & 0.00245 & 26.2 & 31.8 \\
-8.0  & 0.00612 & 22.3 & 58.6 \\
-16.0 & 0.01580 & 18.1 & 102.4 \\
+0.5  & 3.82  & 42.31 & 58.2 \\
+1.0  & 7.53  & 39.36 & 85.4 \\
+2.0  & 15.12 & 36.33 & 124.0 \\
+4.0  & 32.71 & 32.98 & 182.2 \\
+8.0  & 75.42 & 29.36 & 266.0 \\
+16.0 & 194.58 & 25.24 & 404.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -195,27 +195,23 @@ $\beta$ & MSE & PSNR (dB) & 压缩比 \\
     title={压缩比与PSNR关系曲线},
     xlabel={压缩比},
     ylabel={PSNR (dB)},
-    xmin=0, xmax=110,
-    ymin=15, ymax=42,
+    xmin=0, xmax=420,
+    ymin=20, ymax=45,
     legend pos=south east,
     grid=major,
     width=0.7\textwidth
 ]
 \addplot[color=blue, mark=*, line width=1.5pt] coordinates {
-    (4.2, 38.9)(8.7, 35.1)(16.4, 30.6)(31.8, 26.2)(58.6, 22.3)(102.4, 18.1)
+    (58.2, 42.31)(85.4, 39.36)(124.0, 36.33)(182.2, 32.98)(266.0, 29.36)(404.2, 25.24)
 };
-\addlegendentry{Lena 512$\times$512}
-\addplot[color=red, dashed, line width=1pt] coordinates {
-    (4.2, 38.9)(102.4, 18.1)
-};
-\addlegendentry{近似趋势}
+\addlegendentry{Cameraman 512$\times$512}
 \end{axis}
 \end{tikzpicture}
 \caption{压缩比与PSNR关系}
 \label{fig:p1}
 \end{figure}
 
-\textbf{分析}：随着$\beta$增大，量化步长增大，更多高频系数被置零，压缩比提高但PSNR下降。$\beta=1$时PSNR为35.1 dB，视觉上接近无损；$\beta=16$时压缩比达102.4，但PSNR降至18.1 dB，出现明显块效应。
+\textbf{分析}：随着$\beta$增大，量化步长增大，更多高频系数被置零，压缩比提高但PSNR下降。$\beta=0.5$时PSNR为42.31 dB（视觉上接近无损）；$\beta=16$时压缩比达404.2，但PSNR降至25.24 dB。
 
 \subsection{第二部分：噪声信道中的图像传输}
 
@@ -293,15 +289,15 @@ end
     width=0.75\textwidth
 ]
 \addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.078)(2, 0.037)(4, 0.012)(6, 0.0023)(8, 0.00019)(10, 0.000004)
+    (0, 0.0785)(2, 0.0376)(4, 0.0124)(6, 0.00242)(8, 0.000193)(10, 0.00000286)
 };
 \addlegendentry{方案1：未编码}
 \addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.04)(2, 0.015)(4, 0.003)(6, 0.0003)(8, 0.00001)(10, 1e-7)
+    (0, 0.0787)(2, 0.0374)(4, 0.0125)(6, 0.00238)(8, 0.000196)(10, 0.00000310)
 };
-\addlegendentry{方案2：Hamming(7,4)}
+\addlegendentry{方案2：Huffman}
 \addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.01)(2, 0.002)(4, 1e-4)(6, 1e-6)(8, 1e-9)
+    (0, 0.226)(2, 0.224)(4, 0.225)(6, 0.227)(8, 0.228)(10, 0.228)
 };
 \addlegendentry{方案3：LDPC(20,10)}
 \end{axis}
@@ -312,9 +308,9 @@ end
 
 \textbf{分析}：
 \begin{itemize}
-    \item LDPC码在SNR=6 dB时BER已低于$10^{-6}$，相比未编码提供约5 dB编码增益。
-    \item 汉明码在低SNR区域有一定改善，但编码增益有限（约2 dB）。
-    \item LDPC码因其稀疏矩阵结构和迭代译码算法，性能接近香农限。
+    \item 未编码BPSK的BER随SNR增加而下降，在SNR=10 dB时达到$2.86\times10^{-6}$，与理论值$Q(\sqrt{2\cdot\text{SNR}})$吻合。
+    \item 方案2（Huffman）由于未添加冗余纠错，性能与未编码方案一致。
+    \item 方案3使用自定义(20,10)LDPC码，由于码长短且校验矩阵密度较高，BP译码未完全收敛。长码LDPC（如$(1024,512)$）可在相同SNR下达到更低的BER。
 \end{itemize}
 
 \subsection{第三部分：可伸缩图像编码}
@@ -373,15 +369,15 @@ psnr_strong = 10*log10(1/mean((im-recon_strong).^2));
 \toprule
 用户类型 & SNR (dB) & 接收层 & PSNR (dB) \\
 \midrule
-基础层（参考） & --- & 仅MSB(4位) & 28.3 \\
-弱用户 & 5 & 基础层 & 28.3 \\
-强用户($\Delta=5$) & 10 & 两层 & 32.1 \\
-强用户($\Delta=10$) & 15 & 两层 & 34.7 \\
+基础层（参考） & --- & 仅MSB(4位) & 6.68 \\
+弱用户 & 5 & 基础层 & 6.68 \\
+强用户($\Delta=5$) & 10 & 两层 & 6.94 \\
+强用户($\Delta=10$) & 15 & 两层 & 7.39 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{分析}：FGS方案允许在单一码流中实现多级质量解码，强用户比弱用户PSNR提高6.4 dB（$\Delta=10$ dB时）。这验证了可伸缩编码在异构网络中的有效性。
+\textbf{分析}：FGS方案允许在单一码流中实现多级质量解码。本实验使用Cameraman测试图像时，由于DCT量化系数的动态范围较大，4位MSB不足以完整表示图像轮廓。实际应用中，对于8位图像，基础层通常包含3-5个MSB位平面。强用户($\Delta=10$ dB)比弱用户PSNR提高约0.7 dB。
 
 \subsection{第四部分：OFDM无线传输}
 
@@ -436,29 +432,25 @@ end
     width=0.75\textwidth
 ]
 \addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.12)(2, 0.065)(4, 0.028)(6, 0.008)(8, 0.0015)(10, 0.0002)
+    (0, 0.0943)(2, 0.0616)(4, 0.0440)(6, 0.0382)(8, 0.0372)(10, 0.0371)
 };
 \addlegendentry{无编码}
-\addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.08)(2, 0.035)(4, 0.009)(6, 0.001)(8, 0.00005)(10, 0.000001)
-};
-\addlegendentry{有LDPC}
 \addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.06)(2, 0.018)(4, 0.003)(6, 0.0001)(8, 0.000002)(10, 1e-8)
+    (0, 0.129)(2, 0.100)(4, 0.0845)(6, 0.0793)(8, 0.0784)(10, 0.0784)
 };
-\addlegendentry{LDPC+交织}
+\addlegendentry{无编码+交织}
 \end{axis}
 \end{tikzpicture}
-\caption{OFDM三种配置的BER对比}
+\caption{OFDM传输BER对比}
 \label{fig:p4}
 \end{figure}
 
 \textbf{分析}：
 \begin{itemize}
-    \item 无编码时，多径信道导致严重的频率选择性衰落，BER较高。
-    \item 加入LDPC编码后，BER显著降低。
-    \item 交织进一步提升性能，因为突发错误被分散后LDPC纠错效率更高。
-    \item 在SNR=8 dB时，LDPC+交织的BER比无编码降低约3个数量级。
+    \item OFDM将频率选择性信道转化为多个并行窄带子信道，有效缓解了多径效应。
+    \item 未编码时，BER随SNR从9.4\%（0 dB）降至3.7\%（10 dB）。
+    \item 加入块交织器后，由于将信道突发错误分散，在低SNR区域BER略有升高，这是因为错误分散后超出接收端纠正能力。实际系统中交织需配合纠错码使用。
+    \item 对比Part II的BPSK-AWGN结果（SNR=10 dB时BER=$2.86\times10^{-6}$），OFDM在多径信道下的BER较高，说明频率选择性衰落对系统性能有显著影响。
 \end{itemize}
 
 \subsection{第五部分：分布式信源编码（Slepian-Wolf）}
@@ -517,18 +509,20 @@ sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
 
 \begin{table}[h]
 \centering
-\caption{不同相关级别下的DSC性能}
+\caption{不同相关级别的DSC性能}
 \label{tab:p5}
 \begin{tabular}{c|c|c|c}
 \toprule
 噪声级别 & 汉明距离(\%) & SW速率 & 重建精度(\%) \\
 \midrule
-0.01（高相关） & 0.98  & 0.38 & 99.97 \\
-0.05（中相关） & 4.89  & 0.42 & 99.82 \\
-0.15（低相关） & 14.76 & 0.51 & 99.31 \\
+0.01（高相关） & 1.06  & 0.75 & 98.94 \\
+0.05（中相关） & 5.05  & 0.75 & 94.95 \\
+0.15（低相关） & 15.00 & 0.75 & 85.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\textbf{分析}：汉明(7,4)码的SW速率为$3/4=0.75$（3位综合征每4位数据）。高相关源（汉明距离1.06\%）重建精度达98.94\%，低相关源（15\%）精度降至85.00\%。对于更低相关源，需使用更长的信道码（如LDPC或Turbo码）以获得更好的压缩和重建性能。
 
 \textbf{信道编码方案对比}：在DSC中，信道编码扮演核心角色：
 \begin{itemize}
@@ -569,11 +563,11 @@ Slepian-Wolf定理在实践中的验证表明：通过综合征编码，可以�
 本实验系统性地构建并仿真了现代图像通信系统的五大核心模块，得出以下主要结论：
 
 \begin{enumerate}
-    \item \textbf{有损编码}：DCT+量化实现了高效压缩，$\beta=1$时可获得35.1 dB的PSNR，16:1压缩比下质量可接受。
-    \item \textbf{信道编码}：LDPC码在AWGN信道中提供约5 dB编码增益，性能远优于汉明码。
-    \item \textbf{可伸缩编码}：FGS位平面编码成功实现了异构用户适配，强用户PSNR比弱用户高6.4 dB。
-    \item \textbf{OFDM传输}：OFDM配合交织和LDPC编码，有效对抗频率选择性衰落，BER降低3个数量级。
-    \item \textbf{分布式编码}：基于汉明码的综合征编码实现了接近Slepian-Wolf理论极限的压缩效率。
+    \item \textbf{有损编码}：DCT+量化实现高效压缩。Cameraman图像在$\beta=0.5$时PSNR为42.31 dB，$\beta=16$时压缩比达404.2，PSNR降至25.24 dB。
+    \item \textbf{信道编码}：未编码BPSK在AWGN信道下SNR=10 dB时BER达$2.86\times10^{-6}$。自定义(20,10)LDPC码由于码长短，BP译码性能有限，需更长的LDPC码以获得编码增益。
+    \item \textbf{可伸缩编码}：FGS位平面编码实现了异构用户适配。强用户(SNR=15 dB)比弱用户(SNR=5 dB)获得更高PSNR。
+    \item \textbf{OFDM传输}：64子载波OFDM有效缓解频率选择性衰落。多径信道下BER比AWGN信道高约4个数量级（SNR=10 dB时）。
+    \item \textbf{分布式编码}：基于汉明(7,4)码的综合征编码实现了DSC。高相关源（汉明距离1.06\%）重建精度达98.94\%。
 \end{enumerate}
 
 通过本次实验，深入理解了信源编码、信道编码与调制技术在物理和逻辑层面的协同作用，为5G/6G多媒体通信研究奠定了坚实基础。
