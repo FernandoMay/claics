@@ -422,9 +422,9 @@ sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
 \toprule
 Noise Level & Hamming Distance (\%) & SW Rate & Accuracy (\%) \\
 \midrule
-0.01 (High)  & 1.06  & 0.75 & 98.94 \\
-0.05 (Medium) & 5.05  & 0.75 & 94.95 \\
-0.15 (Low)   & 15.00 & 0.75 & 85.00 \\
+0.01 (High)  & 1.00  & 0.75 & 99.96 \\
+0.05 (Medium) & 4.98  & 0.75 & 99.13 \\
+0.15 (Low)   & 14.91 & 0.75 & 93.03 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -436,7 +436,7 @@ Noise Level & Hamming Distance (\%) & SW Rate & Accuracy (\%) \\
 \label{fig:p5_en}
 \end{figure}
 
-\textbf{Analysis}: The Hamming(7,4) code yields a fixed SW rate of $3/4=0.75$. High-correlation sources (Hamming distance 1.06\%) achieve 98.94\% reconstruction accuracy. Low-correlation sources (15\%) drop to 85.00\% accuracy. For lower correlation, longer channel codes (LDPC, Turbo, or Polar) are needed for better compression and reconstruction performance.
+\textbf{Analysis}: The Hamming(7,4) code yields a fixed SW rate of $3/4=0.75$. High-correlation sources (Hamming distance 1.00\%) achieve 99.96\% reconstruction accuracy. Low-correlation sources (14.91\%) drop to 93.03\% accuracy. For lower correlation, longer channel codes (LDPC, Turbo, or Polar) are needed for better compression and reconstruction performance.
 
 \textbf{Channel codes for DSC}:
 \begin{itemize}
@@ -481,7 +481,7 @@ This project systematically implemented and evaluated five core modules of moder
     \item \textbf{Channel coding}: Uncoded BPSK over AWGN achieves BER=$2.86\times10^{-6}$ at SNR=10 dB. Custom (20,10) LDPC shows limited performance due to short block length; longer codes are needed for significant coding gain.
     \item \textbf{Scalable coding}: FGS bit-plane coding adapts to heterogeneous users. Strong user (SNR=15 dB) achieves higher PSNR than weak user (SNR=5 dB).
     \item \textbf{OFDM transmission}: 64-subcarrier OFDM effectively mitigates frequency-selective fading. Multipath channel yields BER approximately 4 orders of magnitude higher than AWGN at SNR=10 dB.
-    \item \textbf{Distributed coding}: Hamming(7,4)-based syndrome coding achieves 98.94\% reconstruction accuracy for high-correlation sources (Hamming distance 1.06\%).
+    \item \textbf{Distributed coding}: Hamming(7,4)-based syndrome coding achieves 99.96\% reconstruction accuracy for high-correlation sources (Hamming distance 1.00\%).
 \end{enumerate}
 
 These results demonstrate the synergistic interaction between source coding, channel coding, and modulation techniques, providing a solid foundation for research in 5G/6G multimedia communications.

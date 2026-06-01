@@ -1,0 +1,71 @@
+========================================
+PART V: Distributed Source Coding
+       (Slepian-Wolf Coding)
+========================================
+
+--- Slepian-Wolf Theorem ---
+For two correlated sources X and Y:
+  R_X >= H(X|Y)
+  R_Y >= H(Y|X)
+  R_X + R_Y >= H(X,Y)
+Separate encoding, joint decoding.
+
+--- Hamming Distance ---
+d_H(x,y) = sum_i (x_i XOR y_i)
+Measures correlation between two binary sources.
+
+--- Correlation Level: 0.010 ---
+Hamming distance: 0 (NaN%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: NaN (errors corrected: 0 -> 0)
+
+--- Correlation Level: 0.050 ---
+Hamming distance: 0 (NaN%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: NaN (errors corrected: 0 -> 0)
+
+--- Correlation Level: 0.150 ---
+Hamming distance: 0 (NaN%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: NaN (errors corrected: 0 -> 0)
+========================================
+PART V: Distributed Source Coding
+       (Slepian-Wolf Coding)
+========================================
+
+--- Slepian-Wolf Theorem ---
+For two correlated sources X and Y:
+  R_X >= H(X|Y)
+  R_Y >= H(Y|X)
+  R_X + R_Y >= H(X,Y)
+Separate encoding, joint decoding.
+
+--- Hamming Distance ---
+d_H(x,y) = sum_i (x_i XOR y_i)
+Measures correlation between two binary sources.
+
+--- Correlation Level: 0.010 ---
+Hamming distance: 2622 (1.0002%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: 0.9996 (errors corrected: 2622 -> 97)
+
+--- Correlation Level: 0.050 ---
+Hamming distance: 13061 (4.9824%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: 0.9913 (errors corrected: 13061 -> 2276)
+
+--- Correlation Level: 0.150 ---
+Hamming distance: 39078 (14.9071%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: 0.9303 (errors corrected: 39078 -> 18263)
+
+--- Comparison of Channel Codes for DSC ---
+Hamming (7,4):  Rate=4/7=0.571,  Corrects 1 error/block
+LDPC (20,10):   Rate=10/20=0.50, Corrects multiple errors
+Turbo codes:    Rate~1/3-1/2,    Near Shannon limit
+Polar codes:    Rate=1/2,        Capacity-achieving
+Low correlation -> need stronger channel codes
+High correlation -> simple Hamming may suffice
+
+Part V Complete.
+
