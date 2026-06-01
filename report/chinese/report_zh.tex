@@ -98,6 +98,30 @@
     \item \textbf{探索分布式信源编码}：实现基于Slepian-Wolf定理的分布式编码。
 \end{enumerate}
 
+\begin{table}[h]
+\centering
+\caption{仿真参数配置}
+\label{tab:params_zh}
+\begin{tabular}{ll}
+\toprule
+参数 & 取值 \\
+\midrule
+图像尺寸 & $512\times512$ \\
+分块大小 & $8\times8$ \\
+量化因子 $\beta$ & $0.5$--$16$ \\
+调制方式 & BPSK \\
+信道（Part I--III, V） & AWGN \\
+信道（Part IV） & 频率选择性 $h=[0.9,\;0.4,\;0.2]$ \\
+OFDM FFT大小 & $64$ \\
+循环前缀长度 & $16$ \\
+OFDM数据子载波 & $62$ \\
+汉明码 & $(7,4)$, $d_{\min}=3$, 纠1位错误 \\
+LDPC码 & $(20,10)$, 自定义校验矩阵 \\
+OFDM交织器 & 块交织 $R\times C$ 行列 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{实验内容及实施方法}
 
 \subsection{第一部分：图像有损编码（JPEG类）}
@@ -405,6 +429,24 @@ end
     \item 对比Part II的BPSK-AWGN结果（SNR=10 dB时BER=$2.86\times10^{-6}$），OFDM在多径信道下的BER较高，说明频率选择性衰落对系统性能有显著影响。
 \end{itemize}
 
+\begin{table}[h]
+\centering
+\caption{OFDM有/无交织器性能对比}
+\label{tab:ofdm_zh}
+\begin{tabular}{c|c|c|c}
+\toprule
+SNR (dB) & OFDM (BER) & OFDM+LDPC (BER) & OFDM+LDPC+交织 (BER) \\
+\midrule
+ 0 & $9.39\times10^{-2}$ & $9.45\times10^{-2}$ & $1.29\times10^{-1}$ \\
+ 2 & $6.17\times10^{-2}$ & $6.15\times10^{-2}$ & $1.00\times10^{-1}$ \\
+ 4 & $4.42\times10^{-2}$ & $4.41\times10^{-2}$ & $8.43\times10^{-2}$ \\
+ 6 & $3.82\times10^{-2}$ & $3.81\times10^{-2}$ & $7.93\times10^{-2}$ \\
+ 8 & $3.72\times10^{-2}$ & $3.71\times10^{-2}$ & $7.85\times10^{-2}$ \\
+10 & $3.71\times10^{-2}$ & $3.71\times10^{-2}$ & $7.84\times10^{-2}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{第五部分：分布式信源编码（Slepian-Wolf）}
 
 \subsubsection{理论原理}
@@ -500,22 +542,22 @@ sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
 \subsection{信道编码增益}
 
 \begin{itemize}
-    \item LDPC码提供约5 dB编码增益（在BER=$10^{-3}$时）。
-    \item 汉明码提供约2 dB增益，但码率效率较低（4/7）。
-    \item 高SNR区域（>8 dB），三种方案差异缩小，因为信道本身已足够可靠。
+    \item 未编码BPSK在AWGN信道下SNR=10 dB时BER达$2.86\times10^{-6}$，建立了AWGN基准线。
+    \item 自定义(20,10)LDPC码的BER$\approx 0.226$，与SNR无关，受限于短码长和BP译码器不收敛。实际编码增益需要更长的LDPC码。
+    \item 霍夫曼编码（信源编码）不提供信道编码增益，其BER与未编码情况相同。
 \end{itemize}
 
 \subsection{可伸缩编码意义}
 
-FGS使系统能在同一码流中服务不同信道条件的用户，避免了"一刀切"的传送效率损失。强用户相比弱用户可获得6.4 dB的PSNR提升。
+FGS使系统能在同一码流中服务不同信道条件的用户，避免了"一刀切"的传送效率损失。强用户(SNR=15 dB)相比弱用户(SNR=5 dB)PSNR提升0.71 dB，反映了4-LSB增强层携带的额外信息有限。
 
 \subsection{OFDM与交织}
 
-多径信道中，OFDM将频率选择性衰落转化为多个平坦衰落的子信道。交织进一步将突发错误随机化，配合LDPC纠错，实现了接近AWGN信道的性能。
+多径信道中，OFDM将频率选择性衰落转化为多个平坦衰落的子信道。交织将突发错误随机化，但配合短(20,10)LDPC码时，交织反而增加了BER（如SNR=10 dB时$7.84\times10^{-2}$ vs $3.71\times10^{-2}$），因为LDPC译码器在如此短的码块上无法利用突发结构。需要更长的LDPC码结合交织才能接近AWGN性能。
 
 \subsection{分布式信源编码}
 
-Slepian-Wolf定理在实践中的验证表明：通过综合征编码，可以接近理论极限$H(X|Y)$。高相关源（汉明距离0.98\%）仅需0.38的SW速率即可实现99.97\%的重建精度。
+Slepian-Wolf定理在实践中的验证表明：通过综合征编码，可以在接近$H(X|Y)$的速率下实现压缩。采用汉明(7,4)码的SW速率$3/4=0.75$时，高相关源（汉明距离$\approx$1\%）重建精度达99.96\%，低相关源（$\approx$15\%）精度达93.03\%。
 
 \section{结论}
 

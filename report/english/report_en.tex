@@ -96,6 +96,30 @@ Receiver: Demodulation $\rightarrow$ Channel Decoding $\rightarrow$ Dequantizati
     \item \textbf{Explore distributed source coding}: Implement Slepian-Wolf coding with Hamming syndromes.
 \end{enumerate}
 
+\begin{table}[h]
+\centering
+\caption{Simulation Parameters}
+\label{tab:params_en}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+Image size & $512\times512$ \\
+Block size & $8\times8$ \\
+Quantization factor $\beta$ & $0.5$--$16$ \\
+Modulation & BPSK \\
+Channel (Parts I--III, V) & AWGN \\
+Channel (Part IV) & Frequency-selective $h=[0.9,\;0.4,\;0.2]$ \\
+OFDM FFT size & $64$ \\
+Cyclic prefix length & $16$ \\
+OFDM data subcarriers & $62$ \\
+Hamming code & $(7,4)$, $d_{\min}=3$, corrects 1 error \\
+LDPC code & $(20,10)$, custom parity-check matrix \\
+OFDM interleaver & Block: $R\times C$ row--column \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Experimental Methodology}
 
 \subsection{Part I: Lossy Image Coding (JPEG-like)}
@@ -367,6 +391,24 @@ Block interleaver: write row-wise into $R \times C$ matrix, read column-wise. Th
     \item Compared to Part II (BPSK-AWGN: BER=$2.86\times10^{-6}$ at 10 dB), OFDM over multipath channels shows significantly higher BER, demonstrating the impact of frequency-selective fading.
 \end{itemize}
 
+\begin{table}[h]
+\centering
+\caption{OFDM performance comparison with and without interleaver}
+\label{tab:ofdm_en}
+\begin{tabular}{c|c|c|c}
+\toprule
+SNR (dB) & OFDM (BER) & OFDM+LDPC (BER) & OFDM+LDPC+Interleaver (BER) \\
+\midrule
+ 0 & $9.39\times10^{-2}$ & $9.45\times10^{-2}$ & $1.29\times10^{-1}$ \\
+ 2 & $6.17\times10^{-2}$ & $6.15\times10^{-2}$ & $1.00\times10^{-1}$ \\
+ 4 & $4.42\times10^{-2}$ & $4.41\times10^{-2}$ & $8.43\times10^{-2}$ \\
+ 6 & $3.82\times10^{-2}$ & $3.81\times10^{-2}$ & $7.93\times10^{-2}$ \\
+ 8 & $3.72\times10^{-2}$ & $3.71\times10^{-2}$ & $7.85\times10^{-2}$ \\
+10 & $3.71\times10^{-2}$ & $3.71\times10^{-2}$ & $7.84\times10^{-2}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Part V: Distributed Source Coding (Slepian-Wolf)}
 
 \subsubsection{Theoretical Background}
@@ -455,22 +497,22 @@ Figure~\ref{fig:p1_en} shows the rate-distortion curve following the convex char
 \subsection{Channel Coding Gain}
 
 \begin{itemize}
-    \item LDPC provides approximately 5 dB coding gain at BER=$10^{-3}$.
-    \item Hamming provides about 2 dB gain but with lower code efficiency (4/7).
-    \item At high SNR ($>$8 dB), all three schemes converge as the channel becomes reliable.
+    \item Direct BPSK over AWGN achieves BER=$2.86\times10^{-6}$ at SNR=10 dB, establishing the AWGN baseline.
+    \item The custom (20,10) LDPC code shows BER$\approx 0.226$ independent of SNR, limited by short block length and BP decoder non-convergence. Longer codes are required for practical coding gain.
+    \item Huffman coding (source coding) does not provide channel coding gain; its BER matches the direct case.
 \end{itemize}
 
 \subsection{Scalable Coding Significance}
 
-FGS enables a single stream to serve users with different channel conditions, avoiding one-size-fits-all transmission inefficiency. The strong user gains 6.4 dB PSNR over the weak user.
+FGS enables a single stream to serve users with different channel conditions, avoiding one-size-fits-all transmission inefficiency. The strong user (SNR=15 dB) gains 0.71 dB PSNR over the weak user (SNR=5 dB), reflecting the limited additional information in the 4-LSB enhancement layer.
 
 \subsection{OFDM and Interleaving}
 
-OFDM converts frequency-selective fading into multiple flat-fading subchannels. Interleaving randomizes burst errors, and combined with LDPC, achieves performance approaching AWGN channel conditions.
+OFDM converts frequency-selective fading into multiple flat-fading subchannels. Interleaving randomizes burst errors, but with the short (20,10) LDPC code the interleaver actually increases BER (e.g., $7.84\times10^{-2}$ vs $3.71\times10^{-2}$ at SNR=10 dB) because the LDPC decoder cannot exploit the burst structure at such short block lengths. Longer LDPC codes combined with interleaving are needed to approach AWGN performance.
 
 \subsection{Distributed Source Coding}
 
-The Slepian-Wolf theorem is validated in practice: syndrome-based coding approaches the theoretical limit $H(X|Y)$. High-correlation sources (Hamming distance 0.98\%) require only SW rate 0.38 for 99.97\% reconstruction accuracy.
+The Slepian-Wolf theorem is validated in practice: syndrome-based coding enables compression at rates approaching $H(X|Y)$. With the Hamming(7,4) code at SW rate $3/4=0.75$, high-correlation sources (Hamming distance $\approx$1\%) achieve 99.96\% reconstruction accuracy, while low-correlation sources ($\approx$15\%) achieve 93.03\%.
 
 \section{Conclusion}
 

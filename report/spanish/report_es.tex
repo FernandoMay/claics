@@ -98,6 +98,30 @@ Receptor: Demodulaci\'on $\rightarrow$ Decod. Canal $\rightarrow$ Decuantizaci\'
     \item \textbf{Explorar codificaci\'on distribuida de fuente}: Implementar codificaci\'on Slepian-Wolf con s\'indromes de Hamming.
 \end{enumerate}
 
+\begin{table}[h]
+\centering
+\caption{Par\'ametros de Simulaci\'on}
+\label{tab:params_es}
+\begin{tabular}{ll}
+\toprule
+Par\'ametro & Valor \\
+\midrule
+Tama\~no de imagen & $512\times512$ \\
+Tama\~no de bloque & $8\times8$ \\
+Factor de cuantizaci\'on $\beta$ & $0.5$--$16$ \\
+Modulaci\'on & BPSK \\
+Canal (Partes I--III, V) & AWGN \\
+Canal (Parte IV) & Selectivo en frecuencia $h=[0.9,\;0.4,\;0.2]$ \\
+FFT OFDM & $64$ \\
+Longitud de prefijo c\'iclico & $16$ \\
+Subportadoras OFDM datos & $62$ \\
+C\'odigo Hamming & $(7,4)$, $d_{\min}=3$, corrige 1 error \\
+C\'odigo LDPC & $(20,10)$, matriz de paridad personalizada \\
+Entrelazador OFDM & Bloque $R\times C$ fila--columna \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Metodolog\'ia Experimental}
 
 \subsection{Parte I: Codificaci\'on de Im\'agenes con P\'erdidas (JPEG)}
@@ -361,6 +385,24 @@ Entrelazador de bloques: escritura por filas en matriz $R \times C$, lectura por
     \item Con entrelazado de bloques (sin codificaci\'on de canal), la BER aumenta a bajo SNR porque los errores r\'afaga se dispersan. En la pr\'actica, el entrelazado debe combinarse con c\'odigos correctores.
 \end{itemize}
 
+\begin{table}[h]
+\centering
+\caption{Rendimiento OFDM con y sin entrelazador}
+\label{tab:ofdm_es}
+\begin{tabular}{c|c|c|c}
+\toprule
+SNR (dB) & OFDM (BER) & OFDM+LDPC (BER) & OFDM+LDPC+Entrelazado (BER) \\
+\midrule
+ 0 & $9.39\times10^{-2}$ & $9.45\times10^{-2}$ & $1.29\times10^{-1}$ \\
+ 2 & $6.17\times10^{-2}$ & $6.15\times10^{-2}$ & $1.00\times10^{-1}$ \\
+ 4 & $4.42\times10^{-2}$ & $4.41\times10^{-2}$ & $8.43\times10^{-2}$ \\
+ 6 & $3.82\times10^{-2}$ & $3.81\times10^{-2}$ & $7.93\times10^{-2}$ \\
+ 8 & $3.72\times10^{-2}$ & $3.71\times10^{-2}$ & $7.85\times10^{-2}$ \\
+10 & $3.71\times10^{-2}$ & $3.71\times10^{-2}$ & $7.84\times10^{-2}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Parte V: Codificaci\'on Distribuida de Fuente (Slepian-Wolf)}
 
 \subsubsection{Fundamento Te\'orico}
@@ -412,19 +454,23 @@ La Figura~\ref{fig:p1_es} muestra la curva tasa-distorsi\'on que sigue la caract
 
 \subsection{Ganancia de Codificaci\'on de Canal}
 
-LDPC proporciona aproximadamente 5 dB de ganancia de codificaci\'on (BER=$10^{-3}$). Hamming proporciona aproximadamente 2 dB pero con menor eficiencia de c\'odigo.
+\begin{itemize}
+    \item BPSK directo sobre AWGN alcanza BER=$2.86\times10^{-6}$ a SNR=10 dB, estableciendo la l\'inea base AWGN.
+    \item El LDPC(20,10) muestra BER$\approx 0.226$ independiente de SNR, limitado por su corta longitud y la falta de convergencia del decodificador BP. Se requieren c\'odigos m\'as largos para obtener ganancia pr\'actica.
+    \item Huffman (codificaci\'on de fuente) no proporciona ganancia de codificaci\'on de canal; su BER coincide con el caso directo.
+\end{itemize}
 
 \subsection{Importancia de la Codificaci\'on Escalable}
 
-FGS permite que un \'unico flujo sirva a usuarios con diferentes condiciones de canal. El usuario fuerte gana 6.4 dB de PSNR sobre el d\'ebil.
+FGS permite que un \'unico flujo sirva a usuarios con diferentes condiciones de canal. El usuario fuerte (SNR=15 dB) gana 0.71 dB de PSNR sobre el d\'ebil (SNR=5 dB), reflejando la informaci\'on limitada en la capa de mejora de 4 LSB.
 
 \subsection{OFDM y Entrelazado}
 
-OFDM convierte el desvanecimiento selectivo en frecuencia en m\'ultiples subcanales planos. El entrelazado aleatoriza los errores r\'afaga y, combinado con LDPC, alcanza un rendimiento pr\'oximo al del canal AWGN.
+OFDM convierte el desvanecimiento selectivo en frecuencia en m\'ultiples subcanales planos. El entrelazado aleatoriza los errores r\'afaga, pero con el c\'odigo LDPC(20,10) corto el entrelazado incrementa la BER (ej. $7.84\times10^{-2}$ vs $3.71\times10^{-2}$ a SNR=10 dB) porque el decodificador LDPC no puede explotar la estructura de r\'afaga con bloques tan cortos. Se necesitan c\'odigos LDPC m\'as largos combinados con entrelazado para acercarse al rendimiento AWGN.
 
 \subsection{Codificaci\'on Distribuida de Fuente}
 
-El teorema de Slepian-Wolf se valida en la pr\'actica: la codificaci\'on basada en s\'indromes se aproxima al l\'imite te\'orico $H(X|Y)$. Fuentes de alta correlaci\'on requieren solo tasa SW 0.38 para una precisi\'on del 99.97\%.
+El teorema de Slepian-Wolf se valida en la pr\'actica: la codificaci\'on basada en s\'indromes permite compresi\'on a tasas cercanas a $H(X|Y)$. Con el c\'odigo Hamming(7,4) a tasa SW $3/4=0.75$, las fuentes de alta correlaci\'on (dist. Hamming $\approx$1\%) logran 99.96\% de precisi\'on, mientras que las de baja correlaci\'on ($\approx$15\%) logran 93.03\%.
 
 \section{Conclusiones}
 
