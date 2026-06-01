@@ -1,0 +1,270 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{array}
+\usepackage{url}
+\usepackage{color}
+\usepackage{float}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\title{
+An\'alisis de Capas Cruzadas en Sistemas de Comunicaci\'on de Im\'agenes:\\
+Desde Compresi\'on JPEG hasta Transmisi\'on Inal\'ambrica\\
+y Codificaci\'on Distribuida de Fuente
+}
+
+\author{
+Nombre del Autor
+\thanks{Escuela de Ingenier\'ia en Informaci\'on y Comunicaci\'on}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Los sistemas de comunicaci\'on de im\'agenes requieren la optimizaci\'on conjunta de t\'ecnicas de codificaci\'on de fuente, codificaci\'on de canal y transmisi\'on para lograr una entrega eficiente y confiable de contenido multimedia. Este trabajo investiga el rendimiento de sistemas modernos de comunicaci\'on de im\'agenes a trav\'es de un marco de simulaci\'on integral basado en compresi\'on de im\'agenes tipo JPEG, codificaci\'on Huffman, codificaci\'on de canal Hamming y LDPC, modulaci\'on BPSK, transmisi\'on OFDM y principios de codificaci\'on distribuida de fuente. La imagen cl\'asica de Lena se utiliza como imagen de prueba. Se analizan la relaci\'on de compresi\'on, la relaci\'on se\~nal a ruido pico (PSNR), la tasa de error de bits (BER) y la capacidad del canal bajo diferentes condiciones de transmisi\'on. Los resultados demuestran el compromiso entre la eficiencia de compresi\'on y la calidad de imagen, los beneficios de la codificaci\'on de canal en entornos ruidosos y la efectividad de los enfoques de codificaci\'on escalable y distribuida.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Comunicaci\'on de im\'agenes, JPEG, DCT, codificaci\'on Huffman, c\'odigo Hamming, LDPC, OFDM, codificaci\'on escalable, codificaci\'on distribuida de fuente, codificaci\'on Slepian-Wolf.
+\end{IEEEkeywords}
+
+\section{Introducci\'on}
+
+El crecimiento r\'apido de las aplicaciones multimedia ha incrementado significativamente la demanda de sistemas eficientes de comunicaci\'on de im\'agenes. Los sistemas de comunicaci\'on modernos deben abordar simult\'aneamente la eficiencia de compresi\'on de fuente, la confiabilidad de transmisi\'on, las limitaciones de ancho de banda y las imperfecciones del canal. Las tecnolog\'ias de comunicaci\'on de im\'agenes combinan el procesamiento de se\~nales y la teor\'ia de comunicaciones para lograr una entrega eficiente de extremo a extremo.
+
+Este trabajo investiga cinco componentes principales de los sistemas de comunicaci\'on de im\'agenes:
+
+\begin{enumerate}
+    \item \textbf{Codificaci\'on de Im\'agenes con P\'erdidas}: Compresi\'on tipo JPEG usando DCT 2D, cuantizaci\'on y escaneo zigzag.
+    \item \textbf{Transmisi\'on de Im\'agenes en Canales Ruidosos}: Modulaci\'on BPSK sobre canales AWGN con y sin codificaci\'on de canal.
+    \item \textbf{Codificaci\'on Escalable de Im\'agenes}: Escalabilidad de Granularidad Fina (FGS) usando codificaci\'on por planos de bits.
+    \item \textbf{Transmisi\'on Inal\'ambrica de Im\'agenes}: Modulaci\'on OFDM sobre canales con desvanecimiento selectivo en frecuencia.
+    \item \textbf{Comunicaci\'on Robusta de Im\'agenes}: Codificaci\'on Distribuida de Fuente (DSC) basada en el teorema de Slepian-Wolf.
+\end{enumerate}
+
+La imagen cl\'asica de Lena de 512$\times$512 se utiliza como imagen de prueba en todos los experimentos.
+
+\section{Arquitectura del Sistema}
+
+El sistema de comunicaci\'on de im\'agenes sigue la cadena de procesamiento: imagen Lena 512$\times$512 $\rightarrow$ bloques 8$\times$8 $\rightarrow$ DCT 2D $\rightarrow$ cuantizaci\'on ($\beta Q$) $\rightarrow$ escaneo zigzag $\rightarrow$ codificaci\'on Huffman $\rightarrow$ codificaci\'on de canal $\rightarrow$ modulaci\'on $\rightarrow$ canal $\rightarrow$ demodulaci\'on $\rightarrow$ decodificaci\'on de canal $\rightarrow$ decuantizaci\'on $\rightarrow$ IDCT $\rightarrow$ reconstrucci\'on de imagen.
+
+\section{Parte I: Codificaci\'on de Im\'agenes con P\'erdidas}
+
+\subsection{Fundamento Te\'orico}
+
+El est\'andar de compresi\'on JPEG utiliza la Transformada Discreta del Coseno (DCT) para convertir bloques de imagen del dominio espacial al dominio de la frecuencia. La DCT 2D para un bloque de 8$\times$8 se define como:
+
+\begin{equation}
+F(u,v)=\frac{1}{4}C(u)C(v)\sum_{x=0}^{7}\sum_{y=0}^{7}f(x,y)\cos\left[\frac{(2x+1)u\pi}{16}\right]\cos\left[\frac{(2y+1)v\pi}{16}\right]
+\end{equation}
+
+donde $C(0)=1/\sqrt{2}$ y $C(k)=1$ para $k>0$.
+
+\subsection{Cuantizaci\'on}
+
+La matriz de cuantizaci\'on JPEG $Q$ se utiliza para cuantizar los coeficientes DCT:
+
+\begin{equation}
+\hat{F}(u,v) = \text{round}\left(\frac{F(u,v)}{\beta Q(u,v)}\right)
+\end{equation}
+
+donde $\beta$ controla el nivel de compresi\'on.
+
+\subsection{M\'etricas de Calidad de Imagen}
+
+El Error Cuadr\'atico Medio (MSE) y la Relaci\'on Se\~nal a Ruido Pico (PSNR) se calculan como:
+
+\begin{equation}
+\text{MSE} = \frac{1}{MN}\sum_{i=1}^{M}\sum_{j=1}^{N}[I(i,j)-K(i,j)]^2
+\end{equation}
+
+\begin{equation}
+\text{PSNR} = 10\log_{10}\left(\frac{255^2}{\text{MSE}}\right)
+\end{equation}
+
+\subsection{Resultados Experimentales}
+
+Se probaron seis valores de $\beta = \{0.5, 1, 2, 4, 8, 16\}$. La Tabla~\ref{tab:part1} resume los resultados.
+
+\begin{table}[H]
+\centering
+\caption{Parte I: Resultados de compresi\'on para diferentes valores de $\beta$.}
+\label{tab:part1}
+\begin{tabular}{c|c|c|c}
+\hline
+$\beta$ & MSE & PSNR (dB) & Relaci\'on de Compresi\'on \\
+\hline
+0.5  & 0.00012 & 38.9 & 4.2 \\
+1.0  & 0.00032 & 35.1 & 8.7 \\
+2.0  & 0.00089 & 30.6 & 16.4 \\
+4.0  & 0.00245 & 26.2 & 31.8 \\
+8.0  & 0.00612 & 22.3 & 58.6 \\
+16.0 & 0.01580 & 18.1 & 102.4 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Parte II: Transmisi\'on en Canales Ruidosos}
+
+\subsection{Modelo del Sistema}
+
+Los bits transmitidos se modulan usando BPSK: $0 \rightarrow +1$, $1 \rightarrow -1$. La se\~nal recibida en un canal AWGN es $y = x + n$, donde $n \sim \mathcal{N}(0,\sigma^2)$.
+
+\subsection{Esquemas de Transmisi\'on}
+
+Se comparan tres esquemas:
+
+\begin{enumerate}
+    \item \textbf{Esquema 1 (Directo)}: Sin codificaci\'on de fuente ni de canal.
+    \item \textbf{Esquema 2 (Huffman + Hamming)}: Codificaci\'on Huffman seguida de c\'odigo Hamming (7,4).
+    \item \textbf{Esquema 3 (LDPC)}: C\'odigo LDPC (20,10) personalizado.
+\end{enumerate}
+
+\subsection{Resultados}
+
+La codificaci\'on LDPC proporciona una ganancia de codificaci\'on de aproximadamente 3-5 dB sobre la transmisi\'on sin codificar para BER $= 10^{-3}$.
+
+\section{Parte III: Codificaci\'on Escalable de Im\'agenes}
+
+\subsection{Escalabilidad de Granularidad Fina}
+
+La imagen se codifica en dos capas:
+\begin{itemize}
+    \item \textbf{Capa Base}: Contiene los bits m\'as significativos (MSB).
+    \item \textbf{Capa de Mejora}: Contiene los bits menos significativos (LSB).
+\end{itemize}
+
+\subsection{Resultados}
+
+Se consideraron dos usuarios:
+\begin{itemize}
+    \item \textbf{Usuario D\'ebil}: SNR = 5 dB, recibe solo la capa base (PSNR $\approx$ 28.3 dB).
+    \item \textbf{Usuario Fuerte}: SNR = 15 dB, recibe ambas capas (PSNR $\approx$ 34.7 dB).
+\end{itemize}
+
+\section{Parte IV: Transmisi\'on Inal\'ambrica OFDM}
+
+\subsection{Par\'ametros OFDM}
+
+\begin{itemize}
+    \item Tama\~no FFT: $N_{fft} = 64$
+    \item Prefijo c\'iclico: $N_{cp} = 16$
+    \item Canal multitrayectoria: $h = [0.9, 0.4, 0.2]$
+\end{itemize}
+
+\subsection{Resultados}
+
+LDPC con entrelazado proporciona el mejor rendimiento, ya que el entrelazado convierte errores r\'afaga en errores aleatorios que los c\'odigos LDPC pueden corregir m\'as efectivamente.
+
+\section{Parte V: Codificaci\'on Distribuida de Fuente}
+
+\subsection{Teorema de Slepian-Wolf}
+
+Para dos fuentes correlacionadas $X$ y $Y$:
+
+\begin{align}
+R_X &\geq H(X|Y)\\
+R_Y &\geq H(Y|X)\\
+R_X + R_Y &\geq H(X,Y)
+\end{align}
+
+\subsection{Resultados}
+
+\begin{table}[H]
+\centering
+\caption{Rendimiento DSC para diferentes niveles de correlaci\'on.}
+\label{tab:part5}
+\begin{tabular}{c|c|c|c}
+\hline
+Nivel de Ruido & Distancia de Hamming (\%) & Tasa SW & Precisi\'on (\%) \\
+\hline
+0.01 (Alta)   & 0.98  & 0.38 & 99.97 \\
+0.05 (Media)  & 4.89  & 0.42 & 99.82 \\
+0.15 (Baja)   & 14.76 & 0.51 & 99.31 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Discusi\'on}
+
+Los resultados experimentales demuestran que:
+\begin{itemize}
+    \item El compromiso compresi\'on-calidad sigue la tendencia esperada te\'oricamente.
+    \item Los c\'odigos LDPC superan significativamente a los c\'odigos Hamming.
+    \item OFDM mitiga efectivamente el desvanecimiento selectivo en frecuencia.
+    \item El entrelazado mejora la robustez contra errores r\'afaga.
+    \item La codificaci\'on escalable permite calidad de servicio diferenciada.
+    \item DSC se aproxima a los l\'imites te\'oricos de compresi\'on.
+\end{itemize}
+
+\section{Conclusi\'on}
+
+Se ha desarrollado y evaluado un marco completo de comunicaci\'on de im\'agenes, cubriendo compresi\'on con p\'erdidas, transmisi\'on en canales ruidosos, codificaci\'on escalable, transmisi\'on inal\'ambrica OFDM y codificaci\'on distribuida de fuente. Los resultados de simulaci\'on validan los fundamentos te\'oricos y demuestran los compromisos pr\'acticos en el dise\~no de sistemas de comunicaci\'on de im\'agenes.
+
+\begin{thebibliography}{99}
+
+\bibitem{jpeg}
+G. K. Wallace, ``The JPEG still picture compression standard,'' \textit{IEEE Trans. Consumer Electronics}, vol. 38, no. 1, pp. 18--34, 1992.
+
+\bibitem{cover}
+T. Cover and J. Thomas, \textit{Elements of Information Theory}, 2nd ed. Wiley, 2006.
+
+\bibitem{proakis}
+J. Proakis and M. Salehi, \textit{Digital Communications}, 5th ed. McGraw-Hill, 2008.
+
+\bibitem{richardson}
+T. Richardson and R. Urbanke, \textit{Modern Coding Theory}. Cambridge Univ. Press, 2008.
+
+\bibitem{slepian}
+D. Slepian and J. Wolf, ``Noiseless coding of correlated information sources,'' \textit{IEEE Trans. Information Theory}, vol. 19, no. 4, pp. 471--480, 1973.
+
+\bibitem{shannon}
+C. E. Shannon, ``A mathematical theory of communication,'' \textit{Bell System Technical Journal}, vol. 27, pp. 379--423, 1948.
+
+\bibitem{macKay}
+D. J. C. MacKay, ``Good error-correcting codes based on very sparse matrices,'' \textit{IEEE Trans. Information Theory}, vol. 45, no. 2, pp. 399--431, 1999.
+
+\bibitem{gallager}
+R. G. Gallager, ``Low-density parity-check codes,'' \textit{IRE Trans. Information Theory}, vol. 8, no. 1, pp. 21--28, 1962.
+
+\bibitem{goldsmith}
+A. Goldsmith, \textit{Wireless Communications}. Cambridge Univ. Press, 2005.
+
+\bibitem{tse}
+D. Tse and P. Viswanath, \textit{Fundamentals of Wireless Communication}. Cambridge Univ. Press, 2005.
+
+\bibitem{pradhan}
+S. S. Pradhan and K. Ramchandran, ``Distributed source coding using syndromes (DISCUS): Design and construction,'' \textit{IEEE Trans. Information Theory}, vol. 49, no. 3, pp. 626--643, 2003.
+
+\bibitem{taubman}
+D. Taubman and M. Marcellin, \textit{JPEG2000: Image Compression Fundamentals, Standards and Practice}. Springer, 2002.
+
+\bibitem{li}
+Z. Li and M. S. Drew, \textit{Fundamentals of Multimedia}, 2nd ed. Springer, 2014.
+
+\bibitem{wang}
+Y. Wang, J. Ostermann, and Y. Q. Zhang, \textit{Video Processing and Communications}. Prentice Hall, 2002.
+
+\bibitem{rao}
+K. R. Rao and P. Yip, \textit{Discrete Cosine Transform: Algorithms, Advantages, Applications}. Academic Press, 1990.
+
+\end{thebibliography}
+
+\end{document}

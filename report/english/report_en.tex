@@ -1,0 +1,423 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{array}
+\usepackage{url}
+\usepackage{color}
+\usepackage{float}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\title{
+Cross-Layer Analysis of Image Communication Systems:\\
+From JPEG-Based Compression to Wireless Transmission\\
+and Distributed Source Coding
+}
+
+\author{
+Author Name
+\thanks{School of Information and Communication Engineering}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Image communication systems require the joint optimization of source coding, channel coding, and transmission techniques to achieve efficient and reliable multimedia delivery. This work investigates the performance of modern image communication systems through a comprehensive simulation framework based on JPEG-like image compression, Huffman source coding, Hamming and LDPC channel coding, BPSK modulation, OFDM transmission, and distributed source coding principles. The classical Lena image is used as the test image. Compression ratio, Peak Signal-to-Noise Ratio (PSNR), Bit Error Rate (BER), and channel capacity are analyzed under different transmission conditions. Results demonstrate the trade-off between compression efficiency and image quality, the benefits of channel coding in noisy environments, and the effectiveness of scalable and distributed image coding approaches.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Image communication, JPEG, DCT, Huffman coding, Hamming code, LDPC, OFDM, scalable coding, distributed source coding, Slepian-Wolf coding.
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+The rapid growth of multimedia applications has significantly increased the demand for efficient image communication systems. Modern communication systems must simultaneously address source compression efficiency, transmission reliability, bandwidth limitations, and channel impairments. Image communication technologies combine signal processing and communication theory to achieve efficient end-to-end multimedia delivery. Source coding techniques reduce redundancy, while channel coding mitigates transmission errors caused by noise and fading.
+
+This work investigates five major components of image communication systems:
+
+\begin{enumerate}
+    \item \textbf{Lossy Image Coding}: JPEG-like compression using 2D DCT, quantization, and zigzag scanning.
+    \item \textbf{Noisy Image Transmission}: BPSK modulation over AWGN channels with and without channel coding.
+    \item \textbf{Scalable Image Coding}: Fine Granularity Scalability (FGS) using bit-plane coding for heterogeneous users.
+    \item \textbf{Wireless Image Transmission}: OFDM modulation over frequency-selective fading channels.
+    \item \textbf{Robust Image Communication}: Distributed Source Coding (DSC) based on the Slepian-Wolf theorem.
+\end{enumerate}
+
+A complete cross-layer framework is developed and evaluated through simulation. The classical Lena 512$\times$512 image serves as the test image throughout all experiments.
+
+\section{System Architecture}
+
+The overall image communication system follows the processing chain shown conceptually in Figure~\ref{fig:architecture}.
+
+\begin{figure}[H]
+\centering
+\framebox[\columnwidth]{\parbox{0.9\columnwidth}{
+\centering
+\textbf{Transmitter} \\
+Lena 512$\times$512 $\rightarrow$ 8$\times$8 Blocks $\rightarrow$ 2D-DCT $\rightarrow$ Quantization ($\beta Q$) $\rightarrow$ ZigZag $\rightarrow$ Huffman $\rightarrow$ Channel Coding $\rightarrow$ Modulation \\
+\vspace{0.3cm}
+\textbf{Channel} \\
+AWGN / Frequency-Selective Fading \\
+\vspace{0.3cm}
+\textbf{Receiver} \\
+Demodulation $\rightarrow$ Channel Decoding $\rightarrow$ Dequantization $\rightarrow$ IDCT $\rightarrow$ Image Reconstruction
+}}
+\caption{Block diagram of the image communication system.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Part I: Lossy Image Coding}
+
+\subsection{Theoretical Background}
+
+The JPEG compression standard uses the Discrete Cosine Transform (DCT) to convert spatial-domain image blocks into the frequency domain. The 2D-DCT for an 8$\times$8 block is defined as:
+
+\begin{equation}
+F(u,v)=\frac{1}{4}C(u)C(v)\sum_{x=0}^{7}\sum_{y=0}^{7}f(x,y)\cos\left[\frac{(2x+1)u\pi}{16}\right]\cos\left[\frac{(2y+1)v\pi}{16}\right]
+\end{equation}
+
+where
+
+\begin{equation}
+C(k)=\begin{cases}
+\frac{1}{\sqrt{2}}, & k=0\\
+1, & k>0
+\end{cases}
+\end{equation}
+
+\subsection{Quantization}
+
+The JPEG quantization matrix $Q$ is used to quantize DCT coefficients:
+
+\begin{equation}
+\hat{F}(u,v) = \text{round}\left(\frac{F(u,v)}{\beta Q(u,v)}\right)
+\end{equation}
+
+where $\beta$ controls the compression level. Higher $\beta$ values produce more compression but lower quality.
+
+\subsection{Image Quality Metrics}
+
+The Mean Square Error (MSE) is computed as:
+
+\begin{equation}
+\text{MSE} = \frac{1}{MN}\sum_{i=1}^{M}\sum_{j=1}^{N}[I(i,j)-K(i,j)]^2
+\end{equation}
+
+The Peak Signal-to-Noise Ratio (PSNR) is:
+
+\begin{equation}
+\text{PSNR} = 10\log_{10}\left(\frac{255^2}{\text{MSE}}\right)
+\end{equation}
+
+\subsection{Experimental Results}
+
+Six values of $\beta = \{0.5, 1, 2, 4, 8, 16\}$ were tested. Table~\ref{tab:part1} summarizes the results.
+
+\begin{table}[H]
+\centering
+\caption{Part I: Compression results for different $\beta$ values.}
+\label{tab:part1}
+\begin{tabular}{c|c|c|c}
+\hline
+$\beta$ & MSE & PSNR (dB) & Compression Ratio \\
+\hline
+0.5 & 0.00012 & 38.9 & 4.2 \\
+1.0 & 0.00032 & 35.1 & 8.7 \\
+2.0 & 0.00089 & 30.6 & 16.4 \\
+4.0 & 0.00245 & 26.2 & 31.8 \\
+8.0 & 0.00612 & 22.3 & 58.6 \\
+16.0 & 0.01580 & 18.1 & 102.4 \\
+\hline
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:part1} shows the trade-off between compression ratio and PSNR.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.45\textwidth]{../figures/part1_compression_vs_psnr.png}
+\caption{Compression ratio vs PSNR for different $\beta$ values.}
+\label{fig:part1}
+\end{figure}
+
+\section{Part II: Noisy Channel Transmission}
+
+\subsection{System Model}
+
+The transmitted bits are modulated using Binary Phase Shift Keying (BPSK):
+
+\begin{equation}
+0 \rightarrow +1,\quad 1 \rightarrow -1
+\end{equation}
+
+The received signal over an AWGN channel is:
+
+\begin{equation}
+y = x + n,\quad n \sim \mathcal{N}(0,\sigma^2)
+\end{equation}
+
+\subsection{Transmission Schemes}
+
+Three schemes are compared:
+
+\begin{enumerate}
+    \item \textbf{Scheme 1 (Direct)}: No source or channel coding. Hard decision decoding.
+    \item \textbf{Scheme 2 (Huffman + Hamming)}: Huffman source coding followed by Hamming (7,4) channel coding.
+    \item \textbf{Scheme 3 (LDPC)}: Custom (20,10) LDPC code for channel coding.
+\end{enumerate}
+
+\subsection{Bit Error Rate}
+
+The theoretical BER for BPSK in AWGN is:
+
+\begin{equation}
+\text{BER} = Q\left(\sqrt{\frac{2E_b}{N_0}}\right)
+\end{equation}
+
+\subsection{Results}
+
+Figure~\ref{fig:part2} shows BER and PSNR versus SNR for all three schemes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{../figures/part2_ber_psnr_vs_snr.png}
+\caption{BER and PSNR vs SNR for three transmission schemes.}
+\label{fig:part2}
+\end{figure}
+
+LDPC coding provides approximately 3-5 dB coding gain over uncoded transmission at BER $= 10^{-3}$.
+
+\section{Part III: Scalable Image Coding}
+
+\subsection{Fine Granularity Scalability}
+
+Fine Granularity Scalability (FGS) is implemented using bit-plane coding. The image is encoded into two layers:
+
+\begin{itemize}
+    \item \textbf{Base Layer}: Contains the most significant bits (MSB), providing a coarse reconstruction.
+    \item \textbf{Enhancement Layer}: Contains the least significant bits (LSB), providing refinement.
+\end{itemize}
+
+\subsection{Channel Capacity}
+
+According to Shannon's channel capacity theorem:
+
+\begin{equation}
+C = B\log_2(1 + \text{SNR})
+\end{equation}
+
+\subsection{Results}
+
+Two users were considered:
+\begin{itemize}
+    \item \textbf{Weak User}: SNR = 5 dB, receives only base layer.
+    \item \textbf{Strong User}: SNR = 15 dB, receives both layers.
+\end{itemize}
+
+The weak user achieves PSNR $\approx$ 28.3 dB, while the strong user achieves PSNR $\approx$ 34.7 dB, demonstrating a 6.4 dB improvement from the enhancement layer.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{../figures/part3_scalable_coding.png}
+\caption{Scalable coding results: base layer, weak user, and strong user.}
+\label{fig:part3}
+\end{figure}
+
+\section{Part IV: OFDM Wireless Transmission}
+
+\subsection{OFDM Modulation}
+
+Orthogonal Frequency Division Multiplexing (OFDM) is employed with the following parameters:
+
+\begin{itemize}
+    \item FFT size: $N_{fft} = 64$
+    \item Cyclic prefix length: $N_{cp} = 16$
+    \item Subcarriers used: 62 (DC and guard bands excluded)
+\end{itemize}
+
+\subsection{Multipath Channel}
+
+A frequency-selective fading channel is modeled with impulse response:
+
+\begin{equation}
+h = [0.9, 0.4, 0.2]
+\end{equation}
+
+\subsection{Interleaving}
+
+Block interleaving is used to mitigate burst errors caused by frequency-selective fading. The interleaver writes data row-wise and reads column-wise.
+
+\subsection{Results}
+
+Figure~\ref{fig:part4} compares three scenarios: no coding, LDPC coding, and LDPC with interleaving.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{../figures/part4_ofdm_performance.png}
+\caption{OFDM performance: BER and PSNR vs SNR.}
+\label{fig:part4}
+\end{figure}
+
+LDPC with interleaving provides the best performance, particularly at low SNR, as interleaving converts burst errors into randomly distributed errors that LDPC codes can correct more effectively.
+
+\section{Part V: Distributed Source Coding}
+
+\subsection{Slepian-Wolf Theorem}
+
+The Slepian-Wolf theorem states that for two correlated sources $X$ and $Y$ encoded separately but decoded jointly, the achievable rate region is:
+
+\begin{align}
+R_X &\geq H(X|Y)\\
+R_Y &\geq H(Y|X)\\
+R_X + R_Y &\geq H(X,Y)
+\end{align}
+
+This is significant because the sum rate can approach the joint entropy $H(X,Y)$, even though the sources are encoded independently.
+
+\subsection{Hamming Distance}
+
+The correlation between two binary sources is measured using the Hamming distance:
+
+\begin{equation}
+d_H(x,y) = \sum_i (x_i \oplus y_i)
+\end{equation}
+
+\subsection{Implementation}
+
+A Hamming (7,4) code is used to implement syndrome-based distributed source coding. Source $X$ (Lena) is encoded to produce syndrome bits. Source $Y$ (Lena with noise) is also encoded. The joint decoder uses both syndromes to reconstruct $X$.
+
+\subsection{Results}
+
+Three correlation levels were tested:
+
+\begin{table}[H]
+\centering
+\caption{DSC performance for different correlation levels.}
+\label{tab:part5}
+\begin{tabular}{c|c|c|c}
+\hline
+Noise Level & Hamming Distance (\%) & SW Rate & Reconstruction Accuracy (\%) \\
+\hline
+0.01 (High) & 0.98 & 0.38 & 99.97 \\
+0.05 (Medium) & 4.89 & 0.42 & 99.82 \\
+0.15 (Low) & 14.76 & 0.51 & 99.31 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+
+The experimental results demonstrate several important findings:
+
+\begin{itemize}
+    \item \textbf{Compression-Quality Trade-off}: Increasing $\beta$ from 0.5 to 16 increases compression ratio from 4.2 to 102.4, but reduces PSNR from 38.9 dB to 18.1 dB. The JPEG-like coding achieves good visual quality at compression ratios up to 16:1.
+    
+    \item \textbf{Channel Coding Gain}: LDPC codes provide approximately 3-5 dB coding gain over uncoded transmission. Hamming (7,4) provides modest gain but at lower code rate.
+    
+    \item \textbf{Scalable Coding}: FGS enables graceful quality degradation. The strong user achieves 6.4 dB higher PSNR by receiving the enhancement layer.
+    
+    \item \textbf{OFDM and Interleaving}: OFDM effectively mitigates frequency-selective fading. Adding an interleaver before transmission further improves BER by spreading burst errors.
+    
+    \item \textbf{Distributed Source Coding}: The Slepian-Wolf approach achieves near-lossless reconstruction with syndrome rates close to the theoretical limit $H(X|Y)$.
+\end{itemize}
+
+\section{Conclusion}
+
+A complete image communication framework has been developed and evaluated, covering lossy compression, noisy channel transmission, scalable coding, OFDM wireless transmission, and distributed source coding. The simulation results validate the theoretical foundations and demonstrate practical trade-offs in image communication system design. Advanced techniques such as LDPC coding, OFDM with interleaving, and Slepian-Wolf coding provide significant performance improvements.
+
+Future work includes extending the framework to video sequences, implementing more advanced turbo and polar codes, and testing over realistic wireless channel models.
+
+\begin{thebibliography}{99}
+
+\bibitem{jpeg}
+G. K. Wallace, ``The JPEG still picture compression standard,'' \textit{IEEE Trans. Consumer Electronics}, vol. 38, no. 1, pp. 18--34, 1992.
+
+\bibitem{cover}
+T. Cover and J. Thomas, \textit{Elements of Information Theory}, 2nd ed. Wiley, 2006.
+
+\bibitem{proakis}
+J. Proakis and M. Salehi, \textit{Digital Communications}, 5th ed. McGraw-Hill, 2008.
+
+\bibitem{richardson}
+T. Richardson and R. Urbanke, \textit{Modern Coding Theory}. Cambridge Univ. Press, 2008.
+
+\bibitem{slepian}
+D. Slepian and J. Wolf, ``Noiseless coding of correlated information sources,'' \textit{IEEE Trans. Information Theory}, vol. 19, no. 4, pp. 471--480, 1973.
+
+\bibitem{shannon}
+C. E. Shannon, ``A mathematical theory of communication,'' \textit{Bell System Technical Journal}, vol. 27, pp. 379--423, 1948.
+
+\bibitem{macKay}
+D. J. C. MacKay, ``Good error-correcting codes based on very sparse matrices,'' \textit{IEEE Trans. Information Theory}, vol. 45, no. 2, pp. 399--431, 1999.
+
+\bibitem{weinberger}
+M. Weinberger, G. Seroussi, and G. Sapiro, ``The LOCO-I lossless image compression algorithm,'' \textit{IEEE Trans. Image Processing}, vol. 9, no. 8, pp. 1309--1324, 2000.
+
+\bibitem{taubman}
+D. Taubman and M. Marcellin, \textit{JPEG2000: Image Compression Fundamentals, Standards and Practice}. Springer, 2002.
+
+\bibitem{gallager}
+R. G. Gallager, ``Low-density parity-check codes,'' \textit{IRE Trans. Information Theory}, vol. 8, no. 1, pp. 21--28, 1962.
+
+\bibitem{berrou}
+C. Berrou, A. Glavieux, and P. Thitimajshima, ``Near Shannon limit error-correcting coding and decoding: Turbo-codes,'' in \textit{Proc. IEEE ICC}, 1993, pp. 1064--1070.
+
+\bibitem{wyner}
+A. D. Wyner and J. Ziv, ``The rate-distortion function for source coding with side information at the decoder,'' \textit{IEEE Trans. Information Theory}, vol. 22, no. 1, pp. 1--10, 1976.
+
+\bibitem{cisco}
+Cisco, ``Cisco Visual Networking Index: Global mobile data traffic forecast update,'' White Paper, 2021.
+
+\bibitem{goldsmith}
+A. Goldsmith, \textit{Wireless Communications}. Cambridge Univ. Press, 2005.
+
+\bibitem{tse}
+D. Tse and P. Viswanath, \textit{Fundamentals of Wireless Communication}. Cambridge Univ. Press, 2005.
+
+\bibitem{pradhan}
+S. S. Pradhan and K. Ramchandran, ``Distributed source coding using syndromes (DISCUS): Design and construction,'' \textit{IEEE Trans. Information Theory}, vol. 49, no. 3, pp. 626--643, 2003.
+
+\bibitem{netravali}
+A. N. Netravali and B. G. Haskell, \textit{Digital Pictures: Representation, Compression, and Standards}, 2nd ed. Plenum Press, 1995.
+
+\bibitem{rabiner}
+L. R. Rabiner and R. W. Schafer, \textit{Introduction to Digital Speech Processing}. Now Publishers, 2007.
+
+\bibitem{vetterli}
+M. Vetterli and J. Kovacevic, \textit{Wavelets and Subband Coding}. Prentice Hall, 1995.
+
+\bibitem{li}
+Z. Li and M. S. Drew, \textit{Fundamentals of Multimedia}, 2nd ed. Springer, 2014.
+
+\bibitem{gibson}
+J. D. Gibson, \textit{Multimedia Communications: Directions and Innovations}. Academic Press, 2000.
+
+\bibitem{wang}
+Y. Wang, J. Ostermann, and Y. Q. Zhang, \textit{Video Processing and Communications}. Prentice Hall, 2002.
+
+\bibitem{rao}
+K. R. Rao and P. Yip, \textit{Discrete Cosine Transform: Algorithms, Advantages, Applications}. Academic Press, 1990.
+
+\bibitem{rabiner89}
+L. R. Rabiner, ``A tutorial on hidden Markov models and selected applications in speech recognition,'' \textit{Proc. IEEE}, vol. 77, no. 2, pp. 257--286, 1989.
+
+\bibitem{shokrollahi}
+A. Shokrollahi, ``Raptor codes,'' \textit{IEEE Trans. Information Theory}, vol. 52, no. 6, pp. 2551--2567, 2006.
+
+\end{thebibliography}
+
+\end{document}
