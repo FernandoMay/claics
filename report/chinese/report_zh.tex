@@ -190,28 +190,19 @@ $\beta$ & MSE & PSNR (dB) & 压缩比 \\
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={压缩比与PSNR关系曲线},
-    xlabel={压缩比},
-    ylabel={PSNR (dB)},
-    xmin=0, xmax=420,
-    ymin=20, ymax=45,
-    legend pos=south east,
-    grid=major,
-    width=0.7\textwidth
-]
-\addplot[color=blue, mark=*, line width=1.5pt] coordinates {
-    (58.2, 42.31)(85.4, 39.36)(124.0, 36.33)(182.2, 32.98)(266.0, 29.36)(404.2, 25.24)
-};
-\addlegendentry{Cameraman 512$\times$512}
-\end{axis}
-\end{tikzpicture}
-\caption{压缩比与PSNR关系}
+\includegraphics[width=0.85\textwidth]{figures/part1_compression_vs_psnr.png}
+\caption{压缩比与PSNR关系（仿真结果）}
 \label{fig:p1}
 \end{figure}
 
 \textbf{分析}：随着$\beta$增大，量化步长增大，更多高频系数被置零，压缩比提高但PSNR下降。$\beta=0.5$时PSNR为42.31 dB（视觉上接近无损）；$\beta=16$时压缩比达404.2，但PSNR降至25.24 dB。
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/part1_original_vs_reconstructed.png}
+\caption{原图（左）与$\beta=1$重建图（中）和$\beta=8$重建图（右）对比}
+\label{fig:p1_recon}
+\end{figure}
 
 \subsection{第二部分：噪声信道中的图像传输}
 
@@ -276,33 +267,8 @@ end
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={BER vs SNR (BPSK over AWGN)},
-    xlabel={SNR (dB)},
-    ylabel={BER},
-    ymode=log,
-    xmin=0, xmax=10,
-    ymin=1e-6, ymax=1,
-    legend pos=north east,
-    grid=major,
-    width=0.75\textwidth
-]
-\addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.0785)(2, 0.0376)(4, 0.0124)(6, 0.00242)(8, 0.000193)(10, 0.00000286)
-};
-\addlegendentry{方案1：未编码}
-\addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.0787)(2, 0.0374)(4, 0.0125)(6, 0.00238)(8, 0.000196)(10, 0.00000310)
-};
-\addlegendentry{方案2：Huffman}
-\addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.226)(2, 0.224)(4, 0.225)(6, 0.227)(8, 0.228)(10, 0.228)
-};
-\addlegendentry{方案3：LDPC(20,10)}
-\end{axis}
-\end{tikzpicture}
-\caption{三种方案BER对比}
+\includegraphics[width=0.85\textwidth]{figures/part2_ber_psnr_vs_snr.png}
+\caption{三种传输方案的BER（左）和PSNR（右）与SNR的关系（仿真结果）}
 \label{fig:p2}
 \end{figure}
 
@@ -377,6 +343,13 @@ psnr_strong = 10*log10(1/mean((im-recon_strong).^2));
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/part3_scalable_coding.png}
+\caption{可伸缩编码结果：原图、基础层、弱用户和强用户重建图像（仿真结果）}
+\label{fig:p3}
+\end{figure}
+
 \textbf{分析}：FGS方案允许在单一码流中实现多级质量解码。本实验使用Cameraman测试图像时，由于DCT量化系数的动态范围较大，4位MSB不足以完整表示图像轮廓。实际应用中，对于8位图像，基础层通常包含3-5个MSB位平面。强用户($\Delta=10$ dB)比弱用户PSNR提高约0.7 dB。
 
 \subsection{第四部分：OFDM无线传输}
@@ -419,29 +392,8 @@ end
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={OFDM: BER vs SNR},
-    xlabel={SNR (dB)},
-    ylabel={BER},
-    ymode=log,
-    xmin=0, xmax=10,
-    ymin=1e-5, ymax=1,
-    legend pos=north east,
-    grid=major,
-    width=0.75\textwidth
-]
-\addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.0943)(2, 0.0616)(4, 0.0440)(6, 0.0382)(8, 0.0372)(10, 0.0371)
-};
-\addlegendentry{无编码}
-\addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.129)(2, 0.100)(4, 0.0845)(6, 0.0793)(8, 0.0784)(10, 0.0784)
-};
-\addlegendentry{无编码+交织}
-\end{axis}
-\end{tikzpicture}
-\caption{OFDM传输BER对比}
+\includegraphics[width=0.85\textwidth]{figures/part4_ofdm_performance.png}
+\caption{OFDM传输性能：BER（左）和PSNR（右）与SNR的关系（仿真结果）}
 \label{fig:p4}
 \end{figure}
 
@@ -521,6 +473,13 @@ sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/part5_distributed_source_coding.png}
+\caption{分布式信源编码性能分析（仿真结果）}
+\label{fig:p5}
+\end{figure}
 
 \textbf{分析}：汉明(7,4)码的SW速率为$3/4=0.75$（3位综合征每4位数据）。高相关源（汉明距离1.06\%）重建精度达98.94\%，低相关源（15\%）精度降至85.00\%。对于更低相关源，需使用更长的信道码（如LDPC或Turbo码）以获得更好的压缩和重建性能。
 

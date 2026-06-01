@@ -191,28 +191,19 @@ $\beta$ & ECM & PSNR (dB) & Relaci\'on de Compresi\'on \\
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={Relaci\'on de Compresi\'on vs PSNR},
-    xlabel={Relaci\'on de Compresi\'on},
-    ylabel={PSNR (dB)},
-    xmin=0, xmax=420,
-    ymin=20, ymax=45,
-    legend pos=south east,
-    grid=major,
-    width=0.7\textwidth
-]
-\addplot[color=blue, mark=*, line width=1.5pt] coordinates {
-    (58.2, 42.31)(85.4, 39.36)(124.0, 36.33)(182.2, 32.98)(266.0, 29.36)(404.2, 25.24)
-};
-\addlegendentry{Cameraman 512$\times$512}
-\end{axis}
-\end{tikzpicture}
-\caption{Relaci\'on de Compresi\'on vs PSNR}
+\includegraphics[width=0.85\textwidth]{figuras/part1_compression_vs_psnr.png}
+\caption{Relaci\'on de Compresi\'on vs PSNR (resultado de simulaci\'on)}
 \label{fig:p1_es}
 \end{figure}
 
 \textbf{An\'alisis}: Al aumentar $\beta$, el paso de cuantizaci\'on crece y m\'as coeficientes de alta frecuencia se anulan. Con $\beta=0.5$, el PSNR es 42.31 dB (visualmente sin p\'erdidas). Con $\beta=16$, la relaci\'on de compresi\'on alcanza 404.2 pero el PSNR cae a 25.24 dB.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/part1_original_vs_reconstructed.png}
+\caption{Imagen original (izquierda) vs reconstruida con $\beta=1$ (centro) y $\beta=8$ (derecha)}
+\label{fig:p1_recon_es}
+\end{figure}
 
 \subsection{Parte II: Transmisi\'on de Im\'agenes en Canales Ruidosos}
 
@@ -269,33 +260,8 @@ end
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={BER vs SNR (BPSK sobre AWGN)},
-    xlabel={SNR (dB)},
-    ylabel={BER},
-    ymode=log,
-    xmin=0, xmax=10,
-    ymin=1e-6, ymax=1,
-    legend pos=north east,
-    grid=major,
-    width=0.75\textwidth
-]
-\addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.0785)(2, 0.0376)(4, 0.0124)(6, 0.00242)(8, 0.000193)(10, 0.00000286)
-};
-\addlegendentry{Esquema 1: Sin codificar}
-\addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.0787)(2, 0.0374)(4, 0.0125)(6, 0.00238)(8, 0.000196)(10, 0.00000310)
-};
-\addlegendentry{Esquema 2: Huffman}
-\addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.226)(2, 0.224)(4, 0.225)(6, 0.227)(8, 0.228)(10, 0.228)
-};
-\addlegendentry{Esquema 3: LDPC(20,10)}
-\end{axis}
-\end{tikzpicture}
-\caption{BER de los tres esquemas de transmisi\'on}
+\includegraphics[width=0.85\textwidth]{figuras/part2_ber_psnr_vs_snr.png}
+\caption{BER (izquierda) y PSNR (derecha) vs SNR (resultados de simulaci\'on)}
 \label{fig:p2_es}
 \end{figure}
 
@@ -349,6 +315,13 @@ Usuario fuerte ($\Delta=10$) & 15 & Ambas capas & 7.39 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/part3_scalable_coding.png}
+\caption{Codificaci\'on escalable: original, capa base, usuario d\'ebil y usuario fuerte (resultados de simulaci\'on)}
+\label{fig:p3_es}
+\end{figure}
+
 \textbf{An\'alisis}: FGS permite decodificaci\'on multinivel desde un \'unico flujo. El usuario fuerte ($\Delta=10$ dB) alcanza 0.71 dB m\'as de PSNR que el d\'ebil.
 
 \subsection{Parte IV: Transmisi\'on Inal\'ambrica OFDM}
@@ -376,29 +349,8 @@ Entrelazador de bloques: escritura por filas en matriz $R \times C$, lectura por
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={OFDM: BER vs SNR},
-    xlabel={SNR (dB)},
-    ylabel={BER},
-    ymode=log,
-    xmin=0, xmax=10,
-    ymin=1e-5, ymax=1,
-    legend pos=north east,
-    grid=major,
-    width=0.75\textwidth
-]
-\addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.0943)(2, 0.0616)(4, 0.0440)(6, 0.0382)(8, 0.0372)(10, 0.0371)
-};
-\addlegendentry{Sin codificar}
-\addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.129)(2, 0.100)(4, 0.0845)(6, 0.0793)(8, 0.0784)(10, 0.0784)
-};
-\addlegendentry{Sin codificar + Entrelazado}
-\end{axis}
-\end{tikzpicture}
-\caption{Comparaci\'on BER en OFDM}
+\includegraphics[width=0.85\textwidth]{figuras/part4_ofdm_performance.png}
+\caption{Rendimiento OFDM: BER (izquierda) y PSNR (derecha) vs SNR (resultados de simulaci\'on)}
 \label{fig:p4_es}
 \end{figure}
 
@@ -444,6 +396,13 @@ Nivel de Ruido & Dist. Hamming (\%) & Tasa SW & Precisi\'on (\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/part5_distributed_source_coding.png}
+\caption{An\'alisis de rendimiento de codificaci\'on distribuida de fuente (resultados de simulaci\'on)}
+\label{fig:p5_es}
+\end{figure}
 
 \section{Discusi\'on y An\'alisis}
 

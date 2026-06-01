@@ -189,28 +189,19 @@ $\beta$ & MSE & PSNR (dB) & Compression Ratio \\
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={Compression Ratio vs PSNR},
-    xlabel={Compression Ratio},
-    ylabel={PSNR (dB)},
-    xmin=0, xmax=420,
-    ymin=20, ymax=45,
-    legend pos=south east,
-    grid=major,
-    width=0.7\textwidth
-]
-\addplot[color=blue, mark=*, line width=1.5pt] coordinates {
-    (58.2, 42.31)(85.4, 39.36)(124.0, 36.33)(182.2, 32.98)(266.0, 29.36)(404.2, 25.24)
-};
-\addlegendentry{Cameraman 512$\times$512}
-\end{axis}
-\end{tikzpicture}
-\caption{Compression Ratio vs PSNR}
+\includegraphics[width=0.85\textwidth]{figures/part1_compression_vs_psnr.png}
+\caption{Compression Ratio vs PSNR (simulation result)}
 \label{fig:p1_en}
 \end{figure}
 
 \textbf{Analysis}: As $\beta$ increases, the quantization step grows, more high-frequency coefficients are zeroed, compression ratio increases but PSNR decreases. At $\beta=0.5$, PSNR is 42.31 dB (visually near-lossless). At $\beta=16$, CR reaches 404.2 but PSNR drops to 25.24 dB.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/part1_original_vs_reconstructed.png}
+\caption{Original image (left) vs reconstructed at $\beta=1$ (center) and $\beta=8$ (right)}
+\label{fig:p1_recon_en}
+\end{figure}
 
 \subsection{Part II: Image Transmission over Noisy Channels}
 
@@ -271,33 +262,8 @@ end
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={BER vs SNR (BPSK over AWGN)},
-    xlabel={SNR (dB)},
-    ylabel={BER},
-    ymode=log,
-    xmin=0, xmax=10,
-    ymin=1e-6, ymax=1,
-    legend pos=north east,
-    grid=major,
-    width=0.75\textwidth
-]
-\addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.0785)(2, 0.0376)(4, 0.0124)(6, 0.00242)(8, 0.000193)(10, 0.00000286)
-};
-\addlegendentry{Scheme 1: Uncoded}
-\addplot[color=blue, mark=square, line width=1.5pt] coordinates {
-    (0, 0.0787)(2, 0.0374)(4, 0.0125)(6, 0.00238)(8, 0.000196)(10, 0.00000310)
-};
-\addlegendentry{Scheme 2: Huffman}
-\addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.226)(2, 0.224)(4, 0.225)(6, 0.227)(8, 0.228)(10, 0.228)
-};
-\addlegendentry{Scheme 3: LDPC(20,10)}
-\end{axis}
-\end{tikzpicture}
-\caption{BER comparison of three schemes}
+\includegraphics[width=0.85\textwidth]{figures/part2_ber_psnr_vs_snr.png}
+\caption{BER (left) and PSNR (right) vs SNR for three transmission schemes (simulation results)}
 \label{fig:p2_en}
 \end{figure}
 
@@ -354,6 +320,13 @@ Strong user ($\Delta=10$) & 15 & Both layers & 7.39 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/part3_scalable_coding.png}
+\caption{Scalable coding: original, base layer, weak user, and strong user reconstructions (simulation results)}
+\label{fig:p3_en}
+\end{figure}
+
 \textbf{Analysis}: FGS enables multi-level quality decoding from a single stream. The strong user ($\Delta=10$ dB) achieves 0.71 dB higher PSNR than the weak user. The relatively low PSNR values are due to the DCT coefficient quantization spanning a wide dynamic range; 4 MSB bits cannot fully represent the image structure. In practice, the base layer typically contains 3-5 MSB bit-planes to ensure acceptable base quality.
 
 \subsection{Part IV: OFDM Wireless Transmission}
@@ -381,29 +354,8 @@ Block interleaver: write row-wise into $R \times C$ matrix, read column-wise. Th
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    title={OFDM: BER vs SNR},
-    xlabel={SNR (dB)},
-    ylabel={BER},
-    ymode=log,
-    xmin=0, xmax=10,
-    ymin=1e-5, ymax=1,
-    legend pos=north east,
-    grid=major,
-    width=0.75\textwidth
-]
-\addplot[color=red, mark=triangle, line width=1.5pt] coordinates {
-    (0, 0.0943)(2, 0.0616)(4, 0.0440)(6, 0.0382)(8, 0.0372)(10, 0.0371)
-};
-\addlegendentry{No coding}
-\addplot[color=green!60!black, mark=o, line width=1.5pt] coordinates {
-    (0, 0.129)(2, 0.100)(4, 0.0845)(6, 0.0793)(8, 0.0784)(10, 0.0784)
-};
-\addlegendentry{No coding + Interleaver}
-\end{axis}
-\end{tikzpicture}
-\caption{OFDM BER comparison}
+\includegraphics[width=0.85\textwidth]{figures/part4_ofdm_performance.png}
+\caption{OFDM performance: BER (left) and PSNR (right) vs SNR (simulation results)}
 \label{fig:p4_en}
 \end{figure}
 
@@ -476,6 +428,13 @@ Noise Level & Hamming Distance (\%) & SW Rate & Accuracy (\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/part5_distributed_source_coding.png}
+\caption{Distributed source coding performance analysis (simulation results)}
+\label{fig:p5_en}
+\end{figure}
 
 \textbf{Analysis}: The Hamming(7,4) code yields a fixed SW rate of $3/4=0.75$. High-correlation sources (Hamming distance 1.06\%) achieve 98.94\% reconstruction accuracy. Low-correlation sources (15\%) drop to 85.00\% accuracy. For lower correlation, longer channel codes (LDPC, Turbo, or Polar) are needed for better compression and reconstruction performance.
 
