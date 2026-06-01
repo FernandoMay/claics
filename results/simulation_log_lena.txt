@@ -1,0 +1,182 @@
+============================================================
+Cross-Layer Analysis of Image Communication Systems
+============================================================
+
+Loading Lena image...
+Loaded lena512.mat (512x512)
+Image size: 512 x 512
+
+============================================================
+PART I: Lossy Image Coding (JPEG-like)
+============================================================
+
+========================================
+PART I: Lossy Image Coding (JPEG-like)
+========================================
+Beta =   0.5 | MSE =   1.9637 | PSNR =  45.20 dB | Compressed = 33152 bits | CR =  63.26
+  -> Saved: ../results/reconstructed_beta_0.5.png
+Beta =   1.0 | MSE =   4.3905 | PSNR =  41.71 dB | Compressed = 24542 bits | CR =  85.45
+  -> Saved: ../results/reconstructed_beta_1.0.png
+Beta =   2.0 | MSE =  10.5471 | PSNR =  37.90 dB | Compressed = 17164 bits | CR = 122.18
+Beta =   4.0 | MSE =  25.9119 | PSNR =  34.00 dB | Compressed = 11646 bits | CR = 180.07
+  -> Saved: ../results/reconstructed_beta_4.0.png
+Beta =   8.0 | MSE =  65.5162 | PSNR =  29.97 dB | Compressed = 7924 bits | CR = 264.66
+Beta =  16.0 | MSE = 172.7551 | PSNR =  25.76 dB | Compressed = 5802 bits | CR = 361.45
+  -> Saved: ../results/reconstructed_beta_16.0.png
+
+Part I Complete.
+
+============================================================
+PART II: Noisy Channel Transmission
+============================================================
+
+========================================
+PART II: Noisy Channel Transmission
+========================================
+Total bits to transmit: 4194304
+
+--- SNR = 0 dB ---
+  Scheme 1 (Direct): BER = 7.860088e-02, PSNR = 5.28 dB
+  Scheme 2 (Huffman): BER = 7.868409e-02, PSNR = 5.29 dB
+  Scheme 3 (LDPC): BER = 2.262614e-01, PSNR = 5.25 dB
+
+--- SNR = 2 dB ---
+  Scheme 1 (Direct): BER = 3.740025e-02, PSNR = 5.31 dB
+  Scheme 2 (Huffman): BER = 3.758931e-02, PSNR = 5.31 dB
+  Scheme 3 (LDPC): BER = 2.242703e-01, PSNR = 5.25 dB
+
+--- SNR = 4 dB ---
+  Scheme 1 (Direct): BER = 1.255941e-02, PSNR = 5.51 dB
+  Scheme 2 (Huffman): BER = 1.247644e-02, PSNR = 5.50 dB
+  Scheme 3 (LDPC): BER = 2.255666e-01, PSNR = 5.25 dB
+
+--- SNR = 6 dB ---
+  Scheme 1 (Direct): BER = 2.377987e-03, PSNR = 6.15 dB
+  Scheme 2 (Huffman): BER = 2.396107e-03, PSNR = 6.14 dB
+  Scheme 3 (LDPC): BER = 2.271771e-01, PSNR = 5.26 dB
+
+--- SNR = 8 dB ---
+  Scheme 1 (Direct): BER = 1.947880e-04, PSNR = 6.24 dB
+  Scheme 2 (Huffman): BER = 1.964569e-04, PSNR = 6.23 dB
+  Scheme 3 (LDPC): BER = 2.281804e-01, PSNR = 5.26 dB
+
+--- SNR = 10 dB ---
+  Scheme 1 (Direct): BER = 2.861023e-06, PSNR = 6.23 dB
+  Scheme 2 (Huffman): BER = 3.576279e-06, PSNR = 6.24 dB
+========================================
+PART III: Scalable Image Coding (FGS)
+========================================
+Quantized range: [-47, 116], bits needed: 8
+Using 4 bits for base layer, remaining for enhancement
+Weak user SNR: 5 dB
+Strong user SNR: 15 dB
+Weak user channel capacity: 2.06 bits/symbol
+Strong user channel capacity: 5.03 bits/symbol
+
+Weak user PSNR: 6.43 dB
+Strong user PSNR: 7.49 dB
+
+Part III Complete.
+
+========================================
+PART IV: OFDM Wireless Transmission
+========================================
+Total bits: 4194304, OFDM Nfft=64, CpLen=16
+Channel impulse response: h = [0.9, 0.4, 0.2]
+
+--- SNR = 0 dB ---
+  No channel coding: BER=9.463096e-02, PSNR=5.24 dB
+  With LDPC (no interleaver): BER=9.418344e-02, PSNR=5.24 dB
+  With LDPC + Interleaver: BER=1.295621e-01, PSNR=5.25 dB
+
+--- SNR = 2 dB ---
+  No channel coding: BER=6.170821e-02, PSNR=5.24 dB
+  With LDPC (no interleaver): BER=6.180906e-02, PSNR=5.24 dB
+  With LDPC + Interleaver: BER=1.005020e-01, PSNR=5.25 dB
+
+--- SNR = 4 dB ---
+  No channel coding: BER=4.428267e-02, PSNR=5.25 dB
+  With LDPC (no interleaver): BER=4.445219e-02, PSNR=5.24 dB
+  With LDPC + Interleaver: BER=8.527374e-02, PSNR=5.26 dB
+
+--- SNR = 6 dB ---
+  No channel coding: BER=3.822064e-02, PSNR=5.24 dB
+  With LDPC (no interleaver): BER=3.831935e-02, PSNR=5.24 dB
+  With LDPC + Interleaver: BER=7.988429e-02, PSNR=5.24 dB
+
+--- SNR = 8 dB ---
+  No channel coding: BER=3.726006e-02, PSNR=5.24 dB
+  With LDPC (no interleaver): BER=3.733349e-02, PSNR=5.24 dB
+  With LDPC + Interleaver: BER=7.892084e-02, PSNR=5.24 dB
+
+--- SNR = 10 dB ---
+  No channel coding: BER=3.730774e-02, PSNR=5.23 dB
+  With LDPC (no interleaver): BER=3.725171e-02, PSNR=5.24 dB
+  With LDPC + Interleaver: BER=7.891679e-02, PSNR=5.24 dB
+
+Part IV Complete.
+
+========================================
+PART V: Distributed Source Coding
+       (Slepian-Wolf Coding)
+========================================
+
+--- Slepian-Wolf Theorem ---
+For two correlated sources X and Y:
+  R_X >= H(X|Y)
+  R_Y >= H(Y|X)
+  R_X + R_Y >= H(X,Y)
+Separate encoding, joint decoding.
+
+--- Hamming Distance ---
+d_H(x,y) = sum_i (x_i XOR y_i)
+Measures correlation between two binary sources.
+
+--- Correlation Level: 0.010 ---
+Hamming distance: 2674 (1.0201%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: 0.9996 (errors corrected: 2674 -> 101)
+
+--- Correlation Level: 0.050 ---
+Hamming distance: 13034 (4.9721%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: 0.9912 (errors corrected: 13034 -> 2296)
+
+--- Correlation Level: 0.150 ---
+Hamming distance: 39171 (14.9426%)
+Slepian-Wolf rate (syndrome/X): 0.750 (parity bits / data bits)
+Reconstruction accuracy: 0.9308 (errors corrected: 39171 -> 18152)
+
+--- Comparison of Channel Codes for DSC ---
+Hamming (7,4):  Rate=4/7=0.571,  Corrects 1 error/block
+LDPC (20,10):   Rate=10/20=0.50, Corrects multiple errors
+Turbo codes:    Rate~1/3-1/2,    Near Shannon limit
+Polar codes:    Rate=1/2,        Capacity-achieving
+Low correlation -> need stronger channel codes
+High correlation -> simple Hamming may suffice
+
+Part V Complete.
+
+========================================
+PART II: Noisy Channel Transmission
+========================================
+Total bits to transmit: 4194304
+
+--- SNR = 0 dB ---
+  Scheme 1 (Direct): BER = 7.860088e-02, PSNR = 5.28 dB
+  Scheme 2 (Huffman): BER = 7.868409e-02, PSNR = 5.29 dB
+  Scheme 3 (LDPC): BER = 2.262614e-01, PSNR = 5.25 dB
+
+--- SNR = 2 dB ---
+  Scheme 1 (Direct): BER = 3.740025e-02, PSNR = 5.31 dB
+  Scheme 2 (Huffman): BER = 3.758931e-02, PSNR = 5.31 dB
+  Scheme 3 (LDPC): BER = 2.242703e-01, PSNR = 5.25 dB
+
+--- SNR = 4 dB ---
+  Scheme 1 (Direct): BER = 1.255941e-02, PSNR = 5.51 dB
+  Scheme 2 (Huffman): BER = 1.247644e-02, PSNR = 5.50 dB
+  Scheme 3 (LDPC): BER = 2.255666e-01, PSNR = 5.25 dB
+
+--- SNR = 6 dB ---
+  Scheme 1 (Direct): BER = 2.377987e-03, PSNR = 6.15 dB
+  Scheme 2 (Huffman): BER = 2.396107e-03, PSNR = 6.14 dB

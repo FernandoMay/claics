@@ -80,13 +80,54 @@ El r\'apido crecimiento de las aplicaciones multimedia ha incrementado significa
 
 Este proyecto desarrolla un sistema completo de comunicaci\'on de im\'agenes mediante simulaci\'on en MATLAB, cubriendo codificaci\'on de fuente (DCT, cuantizaci\'on), codificaci\'on de canal (Hamming, LDPC), modulaci\'on (BPSK, OFDM) y reconstrucci\'on en el receptor, analizando sistem\'aticamente el impacto de cada componente.
 
-\begin{conceptbox}[Arquitectura General del Sistema]
-Transmisor: Lena 512$\times$512 $\rightarrow$ Bloques 8$\times$8 $\rightarrow$ DCT-2D $\rightarrow$ Cuantizaci\'on ($\beta Q$) $\rightarrow$ ZigZag $\rightarrow$ Huffman $\rightarrow$ Cod. Canal $\rightarrow$ Modulaci\'on
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.8cm and 0.6cm, auto, font=\footnotesize,
+    block/.style={rectangle, draw, fill=blue!10, rounded corners, minimum width=1.4cm, minimum height=0.6cm, align=center},
+    chan/.style={rectangle, draw, fill=red!10, dashed, minimum width=1.8cm, minimum height=0.6cm, align=center},
+    label/.style={font=\small\bfseries}]
 
-Canal: AWGN / Desvanecimiento Selectivo en Frecuencia
+% Transmitter row
+\node[label] (txlabel) {TX:};
+\node[block, right=0.2cm of txlabel] (img) {Lena};
+\node[block, right=of img] (dct) {DCT};
+\node[block, right=of dct] (quant) {Quant};
+\node[block, right=of quant] (zz) {ZigZag};
+\node[block, right=of zz] (huff) {Huff};
+\node[block, right=of huff] (cenc) {CodCan};
+\node[block, right=of cenc] (mod) {Mod};
 
-Receptor: Demodulaci\'on $\rightarrow$ Decod. Canal $\rightarrow$ Decuantizaci\'on $\rightarrow$ IDCT $\rightarrow$ Reconstrucci\'on de Imagen
-\end{conceptbox}
+% Channel
+\node[chan, right=of mod] (ch) {Canal};
+
+% Receiver row
+\node[label, below=0.8cm of txlabel] (rxlabel) {RX:};
+\node[block, right=0.2cm of rxlabel] (demod) {DeMod};
+\node[block, right=of demod] (cdec) {DecCan};
+\node[block, right=of cdec] (dhuff) {DeHuff};
+\node[block, right=of dhuff] (dzz) {DeZZ};
+\node[block, right=of dzz] (dquant) {DeQ};
+\node[block, right=of dquant] (idct) {IDCT};
+\node[block, right=of idct, fill=green!10] (recon) {Imagen};
+
+\draw[->] (img) -- (dct);
+\draw[->] (dct) -- (quant);
+\draw[->] (quant) -- (zz);
+\draw[->] (zz) -- (huff);
+\draw[->] (huff) -- (cenc);
+\draw[->] (cenc) -- (mod);
+\draw[->] (mod) -- (ch);
+\draw[->] (ch) -- (demod);
+\draw[->] (demod) -- (cdec);
+\draw[->] (cdec) -- (dhuff);
+\draw[->] (dhuff) -- (dzz);
+\draw[->] (dzz) -- (dquant);
+\draw[->] (dquant) -- (idct);
+\draw[->] (idct) -- (recon);
+\end{tikzpicture}
+\caption{Arquitectura del sistema: transmisor (arriba) y receptor (abajo)}
+\label{fig:arch_es}
+\end{figure}
 
 \section{Objetivos de Aprendizaje}
 
@@ -191,24 +232,37 @@ end
 \label{eq:metrics_es}
 \end{equation}
 
+Relaci\'on de Compresi\'on:
+\begin{equation}
+\text{CR} = \frac{\text{Bits Originales}}{\text{Bits Comprimidos}}
+\label{eq:cr_es}
+\end{equation}
+
+\subsubsection{Barrido Zig-Zag}
+Despu\'es de la cuantizaci\'on, la mayor\'ia de los coeficientes DCT de alta frecuencia son cero. Para maximizar la eficiencia de codificaci\'on por longitud de ejecuciones, el bloque 8$\times$8 cuantizado se recorre en orden zig-zag:
+\begin{equation}
+\text{orden zig-zag: } (0,0) \to (0,1) \to (1,0) \to (2,0) \to (1,1) \to (0,2) \to \cdots \to (7,7)
+\end{equation}
+Este patr\'on agrupa primero los coeficientes de baja frecuencia, produciendo largas secuencias de ceros finales que son comprimidas eficientemente por la codificaci\'on de entrop\'ia subsiguiente.
+
 \subsubsection{Resultados}
 
 Se probaron seis valores de $\beta = \{0.5, 1, 2, 4, 8, 16\}$.
 
 \begin{table}[h]
 \centering
-\caption{Resultados de compresi\'on para diferentes $\beta$ (cameraman.tif 512$\times$512)}
+\caption{Resultados de compresi\'on para diferentes $\beta$ (Lena 512$\times$512)}
 \label{tab:p1_es}
 \begin{tabular}{c|c|c|c}
 \toprule
 $\beta$ & ECM & PSNR (dB) & Relaci\'on de Compresi\'on \\
 \midrule
-0.5  & 3.82  & 42.31 & 58.2 \\
-1.0  & 7.53  & 39.36 & 85.4 \\
-2.0  & 15.12 & 36.33 & 124.0 \\
-4.0  & 32.71 & 32.98 & 182.2 \\
-8.0  & 75.42 & 29.36 & 266.0 \\
-16.0 & 194.58 & 25.24 & 404.2 \\
+0.5  & 1.96  & 45.20 & 63.3 \\
+1.0  & 4.39  & 41.71 & 85.5 \\
+2.0  & 10.55 & 37.90 & 122.2 \\
+4.0  & 25.91 & 34.00 & 180.1 \\
+8.0  & 65.52 & 29.97 & 264.7 \\
+16.0 & 172.76 & 25.76 & 361.5 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -220,7 +274,7 @@ $\beta$ & ECM & PSNR (dB) & Relaci\'on de Compresi\'on \\
 \label{fig:p1_es}
 \end{figure}
 
-\textbf{An\'alisis}: Al aumentar $\beta$, el paso de cuantizaci\'on crece y m\'as coeficientes de alta frecuencia se anulan. Con $\beta=0.5$, el PSNR es 42.31 dB (visualmente sin p\'erdidas). Con $\beta=16$, la relaci\'on de compresi\'on alcanza 404.2 pero el PSNR cae a 25.24 dB.
+\textbf{An\'alisis}: Al aumentar $\beta$, el paso de cuantizaci\'on crece y m\'as coeficientes de alta frecuencia se anulan. Con $\beta=0.5$, el PSNR es 45.20 dB (visualmente sin p\'erdidas). Con $\beta=16$, la relaci\'on de compresi\'on alcanza 361.5 pero el PSNR cae a 25.76 dB.
 
 \begin{figure}[h]
 \centering
@@ -308,6 +362,33 @@ I = \sum_{k=0}^{7} B_k \times 2^k
 
 $B_7$ (MSB) contiene el contorno principal; $B_0$ (LSB) contiene los detalles finos.
 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.6cm, auto, font=\footnotesize,
+    blk/.style={rectangle, draw, minimum width=1.6cm, minimum height=0.5cm, align=center},
+    lay/.style={rectangle, draw, fill=blue!10, minimum width=2cm, minimum height=0.5cm, align=center},
+    arr/.style={->, thick}]
+
+\node[blk] (src) {Imagen};
+\node[blk, below=of src] (bp) {Planos\\de Bits};
+\node[lay, below left=0.6cm and 0.3cm of bp] (base) {Capa Base\\$B_7B_6$ (MSB)};
+\node[lay, below right=0.6cm and 0.3cm of bp] (enh) {Mejora\\$B_5\cdots B_0$ (LSB)};
+\node[blk, below=1.2cm of bp] (chan) {Canal};
+\node[lay, below left=0.6cm and 0.3cm of chan] (weak) {Usuario D\'ebil\\Solo Base};
+\node[lay, below right=0.6cm and 0.3cm of chan] (strong) {Usuario Fuerte\\Base+Mejora};
+
+\draw[arr] (src) -- (bp);
+\draw[arr] (bp) -- (base);
+\draw[arr] (bp) -- (enh);
+\draw[arr] (base) -- (chan);
+\draw[arr] (enh) -- (chan);
+\draw[arr] (chan) -- (weak);
+\draw[arr] (chan) -- (strong);
+\end{tikzpicture}
+\caption{Arquitectura FGS: descomposici\'on en planos de bits y transmisi\'on multiusuario}
+\label{fig:fgs_arch_es}
+\end{figure}
+
 Estrategia de transmisi\'on:
 \begin{itemize}
     \item \textbf{Capa base}: Planos MSB ($B_7, B_6$), proporcionan el contorno b\'asico.
@@ -331,10 +412,10 @@ C = B\log_2(1 + \text{SNR})
 \toprule
 Tipo de Usuario & SNR (dB) & Capas Recibidas & PSNR (dB) \\
 \midrule
-Capa base (referencia) & --- & Solo MSB (4 bits) & 6.68 \\
-Usuario d\'ebil & 5 & Capa base & 6.68 \\
-Usuario fuerte ($\Delta=5$) & 10 & Ambas capas & 6.94 \\
-Usuario fuerte ($\Delta=10$) & 15 & Ambas capas & 7.39 \\
+Capa base (referencia) & --- & Solo MSB (4 bits) & 6.43 \\
+Usuario d\'ebil & 5 & Capa base & 6.43 \\
+Usuario fuerte ($\Delta=5$) & 10 & Ambas capas & 6.80 \\
+Usuario fuerte ($\Delta=10$) & 15 & Ambas capas & 7.49 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -346,7 +427,7 @@ Usuario fuerte ($\Delta=10$) & 15 & Ambas capas & 7.39 \\
 \label{fig:p3_es}
 \end{figure}
 
-\textbf{An\'alisis}: FGS permite decodificaci\'on multinivel desde un \'unico flujo. El usuario fuerte ($\Delta=10$ dB) alcanza 0.71 dB m\'as de PSNR que el d\'ebil.
+\textbf{An\'alisis}: FGS permite decodificaci\'on multinivel desde un \'unico flujo. El usuario fuerte ($\Delta=10$ dB) alcanza 1.06 dB m\'as de PSNR que el d\'ebil.
 
 \subsection{Parte IV: Transmisi\'on Inal\'ambrica OFDM}
 
@@ -414,6 +495,30 @@ R_Y &\geq H(Y|X) \label{eq:sw2_es}\\
 R_X + R_Y &\geq H(X,Y) \label{eq:sw3_es}
 \end{align}
 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.8cm, auto, font=\footnotesize,
+    blk/.style={rectangle, draw, minimum width=1.6cm, minimum height=0.5cm, align=center},
+    arr/.style={->, thick}]
+
+\node[blk] (x) {Fuente $X$};
+\node[blk, right=of x] (encx) {Codif. $X$};
+\node[blk, below=1.2cm of x] (y) {Fuente $Y$};
+\node[blk, right=of y] (ency) {Codif. $Y$};
+\node[blk, right=3cm of encx] (joint) {Decodif.\\Conjunta};
+\node[blk, right=of joint, fill=green!10] (recx) {$\hat{X}$};
+
+\draw[arr] (x) -- (encx);
+\draw[arr] (y) -- (ency);
+\draw[arr] (encx) -- node[above] {s\'indrome $S_X$} (joint);
+\draw[arr] (ency) -- node[below] {info aux. $Y$} (joint);
+\draw[arr] (joint) -- (recx);
+\draw[dashed, <->] (x) -- node[right] {correlaci\'on} (y);
+\end{tikzpicture}
+\caption{Codificaci\'on distribuida Slepian-Wolf: codificaci\'on separada, decodificaci\'on conjunta}
+\label{fig:sw_arch_es}
+\end{figure}
+
 \subsubsection{Medida de Correlaci\'on}
 
 Distancia de Hamming:
@@ -462,7 +567,7 @@ La Figura~\ref{fig:p1_es} muestra la curva tasa-distorsi\'on que sigue la caract
 
 \subsection{Importancia de la Codificaci\'on Escalable}
 
-FGS permite que un \'unico flujo sirva a usuarios con diferentes condiciones de canal. El usuario fuerte (SNR=15 dB) gana 0.71 dB de PSNR sobre el d\'ebil (SNR=5 dB), reflejando la informaci\'on limitada en la capa de mejora de 4 LSB.
+FGS permite que un \'unico flujo sirva a usuarios con diferentes condiciones de canal. El usuario fuerte (SNR=15 dB) gana 1.06 dB de PSNR sobre el d\'ebil (SNR=5 dB), reflejando la informaci\'on limitada en la capa de mejora de 4 LSB.
 
 \subsection{OFDM y Entrelazado}
 
@@ -477,9 +582,9 @@ El teorema de Slepian-Wolf se valida en la pr\'actica: la codificaci\'on basada 
 Este proyecto implement\'o y evalu\'o sistem\'aticamente cinco m\'odulos fundamentales de los sistemas modernos de comunicaci\'on de im\'agenes:
 
 \begin{enumerate}
-    \item \textbf{Codificaci\'on con p\'erdidas}: DCT+cuantizaci\'on logra compresi\'on eficiente. Con $\beta=0.5$, PSNR=42.31 dB; con $\beta=16$, CR=404.2 y PSNR=25.24 dB.
+    \item \textbf{Codificaci\'on con p\'erdidas}: DCT+cuantizaci\'on logra compresi\'on eficiente. Con $\beta=0.5$, PSNR=45.20 dB; con $\beta=16$, CR=361.5 y PSNR=25.76 dB.
     \item \textbf{Codificaci\'on de canal}: BPSK no codificado alcanza BER=$2.86\times10^{-6}$ a SNR=10 dB. El LDPC(20,10) muestra rendimiento limitado por su corta longitud.
-    \item \textbf{Codificaci\'on escalable}: FGS se adapta a usuarios heterog\'eneos (usuario fuerte 0.71 dB mejor que d\'ebil).
+    \item \textbf{Codificaci\'on escalable}: FGS se adapta a usuarios heterog\'eneos (usuario fuerte 1.06 dB mejor que d\'ebil).
     \item \textbf{Transmisi\'on OFDM}: OFDM de 64 subportadoras mitiga el desvanecimiento selectivo en frecuencia.
     \item \textbf{Codificaci\'on distribuida}: S\'indromes Hamming(7,4) logran 99.96\% de precisi\'on para fuentes de alta correlaci\'on.
 \end{enumerate}

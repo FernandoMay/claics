@@ -5,9 +5,19 @@ function generate_report_figures()
         mkdir('../results');
     end
 
-    if exist('cameraman.tif', 'file')
+    if exist('lena512.mat', 'file')
+        load('lena512.mat', 'im');
+        disp('Loaded lena512.mat');
+    elseif exist('../lena512.mat', 'file')
+        load('../lena512.mat', 'im');
+        disp('Loaded ../lena512.mat');
+    elseif exist('lena512.png', 'file')
+        im = double(imread('lena512.png'));
+        disp('Loaded lena512.png');
+    elseif exist('cameraman.tif', 'file')
         im_raw = imread('cameraman.tif');
-        im_raw = imresize(im_raw, [512, 512]);
+        im = double(imresize(im_raw, [512, 512]));
+        disp('Loaded cameraman.tif');
     else
         [x, y] = meshgrid(1:512, 1:512);
         im_raw = 128 + 50*sin(0.02*x+0.015*y) + 30*cos(0.04*x) + 20*sin(0.06*y);
@@ -15,8 +25,9 @@ function generate_report_figures()
         im_raw = conv2(im_raw, kernel, 'same');
         im_raw(im_raw < 0) = 0;
         im_raw(im_raw > 255) = 255;
+        im = double(im_raw);
+        disp('Generated synthetic test image');
     end
-    im = double(im_raw);
 
     Q = [16 11 10 16 24 40 51 61;
          12 12 14 19 26 58 60 55;

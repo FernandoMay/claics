@@ -78,13 +78,54 @@ The rapid growth of multimedia applications has significantly increased the dema
 
 This project develops a complete image communication system via MATLAB simulation, covering source coding (DCT, quantization), channel coding (Hamming, LDPC), modulation (BPSK, OFDM), and receiver reconstruction, systematically analyzing the impact of each component.
 
-\begin{conceptbox}[System Architecture Overview]
-Transmitter: Lena 512$\times$512 $\rightarrow$ 8$\times$8 Blocks $\rightarrow$ 2D-DCT $\rightarrow$ Quantization ($\beta Q$) $\rightarrow$ ZigZag $\rightarrow$ Huffman $\rightarrow$ Channel Coding $\rightarrow$ Modulation
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.8cm and 0.6cm, auto, font=\footnotesize,
+    block/.style={rectangle, draw, fill=blue!10, rounded corners, minimum width=1.4cm, minimum height=0.6cm, align=center},
+    chan/.style={rectangle, draw, fill=red!10, dashed, minimum width=1.8cm, minimum height=0.6cm, align=center},
+    label/.style={font=\small\bfseries}]
 
-Channel: AWGN / Frequency-Selective Fading
+% Transmitter row
+\node[label] (txlabel) {TX:};
+\node[block, right=0.2cm of txlabel] (img) {Lena};
+\node[block, right=of img] (dct) {DCT};
+\node[block, right=of dct] (quant) {Quant};
+\node[block, right=of quant] (zz) {ZigZag};
+\node[block, right=of zz] (huff) {Huff};
+\node[block, right=of huff] (cenc) {ChEnc};
+\node[block, right=of cenc] (mod) {Mod};
 
-Receiver: Demodulation $\rightarrow$ Channel Decoding $\rightarrow$ Dequantization $\rightarrow$ IDCT $\rightarrow$ Image Reconstruction
-\end{conceptbox}
+% Channel
+\node[chan, right=of mod] (ch) {Channel};
+
+% Receiver row
+\node[label, below=0.8cm of txlabel] (rxlabel) {RX:};
+\node[block, right=0.2cm of rxlabel] (demod) {DeMod};
+\node[block, right=of demod] (cdec) {ChDec};
+\node[block, right=of cdec] (dhuff) {DeHuff};
+\node[block, right=of dhuff] (dzz) {DeZZ};
+\node[block, right=of dzz] (dquant) {DeQ};
+\node[block, right=of dquant] (idct) {IDCT};
+\node[block, right=of idct, fill=green!10] (recon) {Image};
+
+\draw[->] (img) -- (dct);
+\draw[->] (dct) -- (quant);
+\draw[->] (quant) -- (zz);
+\draw[->] (zz) -- (huff);
+\draw[->] (huff) -- (cenc);
+\draw[->] (cenc) -- (mod);
+\draw[->] (mod) -- (ch);
+\draw[->] (ch) -- (demod);
+\draw[->] (demod) -- (cdec);
+\draw[->] (cdec) -- (dhuff);
+\draw[->] (dhuff) -- (dzz);
+\draw[->] (dzz) -- (dquant);
+\draw[->] (dquant) -- (idct);
+\draw[->] (idct) -- (recon);
+\end{tikzpicture}
+\caption{System architecture: transmitter (top) and receiver (bottom)}
+\label{fig:arch_en}
+\end{figure}
 
 \section{Learning Objectives}
 
@@ -189,24 +230,37 @@ end
 \label{eq:metrics_en}
 \end{equation}
 
+Compression Ratio:
+\begin{equation}
+\text{CR} = \frac{\text{Original Bits}}{\text{Compressed Bits}}
+\label{eq:cr_en}
+\end{equation}
+
+\subsubsection{Zig-Zag Scan}
+After quantization, most high-frequency DCT coefficients are zero. To maximize run-length coding efficiency, the 8$\times$8 quantized block is traversed in a zig-zag order:
+\begin{equation}
+\text{zigzag order: } (0,0) \to (0,1) \to (1,0) \to (2,0) \to (1,1) \to (0,2) \to \cdots \to (7,7)
+\end{equation}
+This scanning pattern groups low-frequency coefficients first, producing long runs of trailing zeros that are efficiently compressed by subsequent entropy coding.
+
 \subsubsection{Results}
 
 Six $\beta$ values $\{0.5, 1, 2, 4, 8, 16\}$ were tested.
 
 \begin{table}[h]
 \centering
-\caption{Compression results for different $\beta$ values (cameraman.tif 512$\times$512)}
+\caption{Compression results for different $\beta$ values (Lena 512$\times$512)}
 \label{tab:p1_en}
 \begin{tabular}{c|c|c|c}
 \toprule
 $\beta$ & MSE & PSNR (dB) & Compression Ratio \\
 \midrule
-0.5  & 3.82  & 42.31 & 58.2 \\
-1.0  & 7.53  & 39.36 & 85.4 \\
-2.0  & 15.12 & 36.33 & 124.0 \\
-4.0  & 32.71 & 32.98 & 182.2 \\
-8.0  & 75.42 & 29.36 & 266.0 \\
-16.0 & 194.58 & 25.24 & 404.2 \\
+0.5  & 1.96  & 45.20 & 63.3 \\
+1.0  & 4.39  & 41.71 & 85.5 \\
+2.0  & 10.55 & 37.90 & 122.2 \\
+4.0  & 25.91 & 34.00 & 180.1 \\
+8.0  & 65.52 & 29.97 & 264.7 \\
+16.0 & 172.76 & 25.76 & 361.5 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -218,7 +272,7 @@ $\beta$ & MSE & PSNR (dB) & Compression Ratio \\
 \label{fig:p1_en}
 \end{figure}
 
-\textbf{Analysis}: As $\beta$ increases, the quantization step grows, more high-frequency coefficients are zeroed, compression ratio increases but PSNR decreases. At $\beta=0.5$, PSNR is 42.31 dB (visually near-lossless). At $\beta=16$, CR reaches 404.2 but PSNR drops to 25.24 dB.
+\textbf{Analysis}: As $\beta$ increases, the quantization step grows, more high-frequency coefficients are zeroed, compression ratio increases but PSNR decreases. At $\beta=0.5$, PSNR is 45.20 dB (visually near-lossless). At $\beta=16$, CR reaches 361.5 but PSNR drops to 25.76 dB.
 
 \begin{figure}[h]
 \centering
@@ -310,6 +364,33 @@ I = \sum_{k=0}^{7} B_k \times 2^k
 
 $B_7$ (MSB) contains the main contour; $B_0$ (LSB) contains fine details.
 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.6cm, auto, font=\footnotesize,
+    blk/.style={rectangle, draw, minimum width=1.6cm, minimum height=0.5cm, align=center},
+    lay/.style={rectangle, draw, fill=blue!10, minimum width=2cm, minimum height=0.5cm, align=center},
+    arr/.style={->, thick}]
+
+\node[blk] (src) {Source Image};
+\node[blk, below=of src] (bp) {Bit-Plane\\Decompose};
+\node[lay, below left=0.6cm and 0.3cm of bp] (base) {Base Layer\\$B_7B_6$ (MSB)};
+\node[lay, below right=0.6cm and 0.3cm of bp] (enh) {Enhancement\\$B_5\cdots B_0$ (LSB)};
+\node[blk, below=1.2cm of bp] (chan) {Channel};
+\node[lay, below left=0.6cm and 0.3cm of chan] (weak) {Weak User\\Base only};
+\node[lay, below right=0.6cm and 0.3cm of chan] (strong) {Strong User\\Base+Enhance};
+
+\draw[arr] (src) -- (bp);
+\draw[arr] (bp) -- (base);
+\draw[arr] (bp) -- (enh);
+\draw[arr] (base) -- (chan);
+\draw[arr] (enh) -- (chan);
+\draw[arr] (chan) -- (weak);
+\draw[arr] (chan) -- (strong);
+\end{tikzpicture}
+\caption{FGS architecture: bit-plane decomposition and multi-user transmission}
+\label{fig:fgs_arch_en}
+\end{figure}
+
 Transmission strategy:
 \begin{itemize}
     \item \textbf{Base layer}: MSB bit-planes ($B_7, B_6$), providing basic outline.
@@ -336,10 +417,10 @@ Strong user SNR = $SNR_w + \Delta$ dB ($\Delta$ = 5 or 10 dB), with larger capac
 \toprule
 User Type & SNR (dB) & Received Layers & PSNR (dB) \\
 \midrule
-Base layer (reference) & --- & MSB only (4 bits) & 6.68 \\
-Weak user & 5 & Base layer & 6.68 \\
-Strong user ($\Delta=5$) & 10 & Both layers & 6.94 \\
-Strong user ($\Delta=10$) & 15 & Both layers & 7.39 \\
+Base layer (reference) & --- & MSB only (4 bits) & 6.43 \\
+Weak user & 5 & Base layer & 6.43 \\
+Strong user ($\Delta=5$) & 10 & Both layers & 6.80 \\
+Strong user ($\Delta=10$) & 15 & Both layers & 7.49 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -351,7 +432,7 @@ Strong user ($\Delta=10$) & 15 & Both layers & 7.39 \\
 \label{fig:p3_en}
 \end{figure}
 
-\textbf{Analysis}: FGS enables multi-level quality decoding from a single stream. The strong user ($\Delta=10$ dB) achieves 0.71 dB higher PSNR than the weak user. The relatively low PSNR values are due to the DCT coefficient quantization spanning a wide dynamic range; 4 MSB bits cannot fully represent the image structure. In practice, the base layer typically contains 3-5 MSB bit-planes to ensure acceptable base quality.
+\textbf{Analysis}: FGS enables multi-level quality decoding from a single stream. The strong user ($\Delta=10$ dB) achieves 1.06 dB higher PSNR than the weak user. The relatively low PSNR values are due to the DCT coefficient quantization spanning a wide dynamic range; 4 MSB bits cannot fully represent the image structure. In practice, the base layer typically contains 3-5 MSB bit-planes to ensure acceptable base quality.
 
 \subsection{Part IV: OFDM Wireless Transmission}
 
@@ -421,6 +502,30 @@ R_X + R_Y &\geq H(X,Y) \label{eq:sw3_en}
 \end{align}
 
 \textbf{Relation to channel coding}: DSC is the dual of channel coding. $X$ is treated as a noisy version of $Y$ through a virtual channel, and syndromes characterize the correlation between the two sources.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.8cm, auto, font=\footnotesize,
+    blk/.style={rectangle, draw, minimum width=1.6cm, minimum height=0.5cm, align=center},
+    arr/.style={->, thick}]
+
+\node[blk] (x) {Source $X$};
+\node[blk, right=of x] (encx) {Encoder $X$};
+\node[blk, below=1.2cm of x] (y) {Source $Y$};
+\node[blk, right=of y] (ency) {Encoder $Y$};
+\node[blk, right=3cm of encx] (joint) {Joint\\Decoder};
+\node[blk, right=of joint, fill=green!10] (recx) {$\hat{X}$};
+
+\draw[arr] (x) -- (encx);
+\draw[arr] (y) -- (ency);
+\draw[arr] (encx) -- node[above] {syndrome $S_X$} (joint);
+\draw[arr] (ency) -- node[below] {side info $Y$} (joint);
+\draw[arr] (joint) -- (recx);
+\draw[dashed, <->] (x) -- node[right] {correlation} (y);
+\end{tikzpicture}
+\caption{Slepian-Wolf distributed source coding: separate encoding, joint decoding}
+\label{fig:sw_arch_en}
+\end{figure}
 
 \subsubsection{Correlation Measure}
 
@@ -504,7 +609,7 @@ Figure~\ref{fig:p1_en} shows the rate-distortion curve following the convex char
 
 \subsection{Scalable Coding Significance}
 
-FGS enables a single stream to serve users with different channel conditions, avoiding one-size-fits-all transmission inefficiency. The strong user (SNR=15 dB) gains 0.71 dB PSNR over the weak user (SNR=5 dB), reflecting the limited additional information in the 4-LSB enhancement layer.
+FGS enables a single stream to serve users with different channel conditions, avoiding one-size-fits-all transmission inefficiency. The strong user (SNR=15 dB) gains 1.06 dB PSNR over the weak user (SNR=5 dB), reflecting the limited additional information in the 4-LSB enhancement layer.
 
 \subsection{OFDM and Interleaving}
 
@@ -519,7 +624,7 @@ The Slepian-Wolf theorem is validated in practice: syndrome-based coding enables
 This project systematically implemented and evaluated five core modules of modern image communication systems:
 
 \begin{enumerate}
-    \item \textbf{Lossy coding}: DCT+quantization achieves efficient compression. Cameraman image at $\beta=0.5$ gives PSNR=42.31 dB; at $\beta=16$ CR=404.2 with PSNR=25.24 dB.
+    \item \textbf{Lossy coding}: DCT+quantization achieves efficient compression. Lena image at $\beta=0.5$ gives PSNR=45.20 dB; at $\beta=16$ CR=361.5 with PSNR=25.76 dB.
     \item \textbf{Channel coding}: Uncoded BPSK over AWGN achieves BER=$2.86\times10^{-6}$ at SNR=10 dB. Custom (20,10) LDPC shows limited performance due to short block length; longer codes are needed for significant coding gain.
     \item \textbf{Scalable coding}: FGS bit-plane coding adapts to heterogeneous users. Strong user (SNR=15 dB) achieves higher PSNR than weak user (SNR=5 dB).
     \item \textbf{OFDM transmission}: 64-subcarrier OFDM effectively mitigates frequency-selective fading. Multipath channel yields BER approximately 4 orders of magnitude higher than AWGN at SNR=10 dB.
@@ -571,6 +676,21 @@ D. Tse and P. Viswanath, \textit{Fundamentals of Wireless Communication}. Cambri
 
 \bibitem{wyner}
 A. D. Wyner and J. Ziv, ``The rate-distortion function for source coding with side information at the decoder,'' \textit{IEEE Trans. Information Theory}, vol. 22, no. 1, pp. 1--10, 1976.
+
+\bibitem{arikan}
+E. Arikan, ``Channel polarization: A method for constructing capacity-achieving codes for symmetric binary-input memoryless channels,'' \textit{IEEE Trans. Information Theory}, vol. 55, no. 7, pp. 3051--3073, 2009.
+
+\bibitem{3gpp}
+3GPP TS 38.212, ``NR; Multiplexing and channel coding,'' v16.0.0, 2020.
+
+\bibitem{bross}
+M. Bross et al., ``JPEG XL: Next-generation image compression architecture,'' in \textit{Proc. SPIE Applications of Digital Image Processing XLIII}, 2020.
+
+\bibitem{bourtsoulatze}
+E. Bourtsoulatze, D. Burth Kurka, and D. G\"und\"uz, ``Deep joint source-channel coding for wireless image transmission,'' \textit{IEEE Trans. Communications}, vol. 67, no. 11, pp. 7820--7833, 2019.
+
+\bibitem{van2010}
+D. Van Veen and V. Poor, ``Semantic communications: A new paradigm for 6G,'' \textit{IEEE Communications Magazine}, vol. 58, no. 11, pp. 10--15, 2020.
 
 \end{thebibliography}
 

@@ -79,13 +79,54 @@
 
 本实验通过Matlab仿真构建完整的图像通信系统，涵盖信源编码（DCT、量化）、信道编码（Hamming、LDPC）、调制传输（BPSK、OFDM）及接收端重构，系统性地分析各环节对系统性能的影响。
 
-\begin{conceptbox}[系统架构总览]
-发射端：Lena 512$\times$512 $\rightarrow$ 8$\times$8分块 $\rightarrow$ 2D-DCT $\rightarrow$ 量化($\beta Q$) $\rightarrow$ ZigZag $\rightarrow$ 哈夫曼编码 $\rightarrow$ 信道编码 $\rightarrow$ 调制
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.8cm and 0.6cm, auto, font=\footnotesize,
+    block/.style={rectangle, draw, fill=blue!10, rounded corners, minimum width=1.4cm, minimum height=0.6cm, align=center},
+    chan/.style={rectangle, draw, fill=red!10, dashed, minimum width=1.8cm, minimum height=0.6cm, align=center},
+    label/.style={font=\small\bfseries}]
 
-信道：AWGN / 频率选择性衰落
+% Transmitter row
+\node[label] (txlabel) {TX:};
+\node[block, right=0.2cm of txlabel] (img) {Lena};
+\node[block, right=of img] (dct) {DCT};
+\node[block, right=of dct] (quant) {量化};
+\node[block, right=of quant] (zz) {ZigZag};
+\node[block, right=of zz] (huff) {哈夫曼};
+\node[block, right=of huff] (cenc) {信道编};
+\node[block, right=of cenc] (mod) {调制};
 
-接收端：解调 $\rightarrow$ 信道译码 $\rightarrow$ 反量化 $\rightarrow$ IDCT $\rightarrow$ 图像重建
-\end{conceptbox}
+% Channel
+\node[chan, right=of mod] (ch) {信道};
+
+% Receiver row
+\node[label, below=0.8cm of txlabel] (rxlabel) {RX:};
+\node[block, right=0.2cm of rxlabel] (demod) {解调};
+\node[block, right=of demod] (cdec) {信道译};
+\node[block, right=of cdec] (dhuff) {哈夫曼};
+\node[block, right=of dhuff] (dzz) {DeZZ};
+\node[block, right=of dzz] (dquant) {反量化};
+\node[block, right=of dquant] (idct) {IDCT};
+\node[block, right=of idct, fill=green!10] (recon) {重建};
+
+\draw[->] (img) -- (dct);
+\draw[->] (dct) -- (quant);
+\draw[->] (quant) -- (zz);
+\draw[->] (zz) -- (huff);
+\draw[->] (huff) -- (cenc);
+\draw[->] (cenc) -- (mod);
+\draw[->] (mod) -- (ch);
+\draw[->] (ch) -- (demod);
+\draw[->] (demod) -- (cdec);
+\draw[->] (cdec) -- (dhuff);
+\draw[->] (dhuff) -- (dzz);
+\draw[->] (dzz) -- (dquant);
+\draw[->] (dquant) -- (idct);
+\draw[->] (idct) -- (recon);
+\end{tikzpicture}
+\caption{系统架构：发射机（上）与接收机（下）}
+\label{fig:arch_zh}
+\end{figure}
 
 \section{学习与实验目标}
 
@@ -190,24 +231,37 @@ end
 \label{eq:metrics}
 \end{equation}
 
+压缩比定义：
+\begin{equation}
+\text{CR} = \frac{\text{原始比特数}}{\text{压缩后比特数}}
+\label{eq:cr}
+\end{equation}
+
+\subsubsection{Zig-Zag扫描}
+量化后，大多数高频DCT系数为零。为最大化游程编码效率，对8$\times$8量化块按Zig-Zag顺序扫描：
+\begin{equation}
+\text{Zig-Zag顺序： } (0,0) \to (0,1) \to (1,0) \to (2,0) \to (1,1) \to (0,2) \to \cdots \to (7,7)
+\end{equation}
+该扫描模式将低频系数排列在前，产生连续的长零序列，便于后续熵编码高效压缩。
+
 \subsubsection{实验结果}
 
 测试$\beta = \{0.5, 1, 2, 4, 8, 16\}$六种情况，结果如表\ref{tab:p1}所示。
 
 \begin{table}[h]
 \centering
-\caption{不同$\beta$值的压缩结果（cameraman.tif 512$\times$512）}
+\caption{不同$\beta$值的压缩结果（Lena 512$\times$512）}
 \label{tab:p1}
 \begin{tabular}{c|c|c|c}
 \toprule
 $\beta$ & MSE & PSNR (dB) & 压缩比 \\
 \midrule
-0.5  & 3.82  & 42.31 & 58.2 \\
-1.0  & 7.53  & 39.36 & 85.4 \\
-2.0  & 15.12 & 36.33 & 124.0 \\
-4.0  & 32.71 & 32.98 & 182.2 \\
-8.0  & 75.42 & 29.36 & 266.0 \\
-16.0 & 194.58 & 25.24 & 404.2 \\
+0.5  & 1.96  & 45.20 & 63.3 \\
+1.0  & 4.39  & 41.71 & 85.5 \\
+2.0  & 10.55 & 37.90 & 122.2 \\
+4.0  & 25.91 & 34.00 & 180.1 \\
+8.0  & 65.52 & 29.97 & 264.7 \\
+16.0 & 172.76 & 25.76 & 361.5 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -219,7 +273,7 @@ $\beta$ & MSE & PSNR (dB) & 压缩比 \\
 \label{fig:p1}
 \end{figure}
 
-\textbf{分析}：随着$\beta$增大，量化步长增大，更多高频系数被置零，压缩比提高但PSNR下降。$\beta=0.5$时PSNR为42.31 dB（视觉上接近无损）；$\beta=16$时压缩比达404.2，但PSNR降至25.24 dB。
+\textbf{分析}：随着$\beta$增大，量化步长增大，更多高频系数被置零，压缩比提高但PSNR下降。$\beta=0.5$时PSNR为45.20 dB（视觉上接近无损）；$\beta=16$时压缩比达361.5，但PSNR降至25.76 dB。
 
 \begin{figure}[h]
 \centering
@@ -315,6 +369,33 @@ I = \sum_{k=0}^{7} B_k \times 2^k
 
 其中$B_7$为最高有效位（MSB），包含图像主要轮廓；$B_0$为最低有效位（LSB），包含细节。
 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.6cm, auto, font=\footnotesize,
+    blk/.style={rectangle, draw, minimum width=1.6cm, minimum height=0.5cm, align=center},
+    lay/.style={rectangle, draw, fill=blue!10, minimum width=2cm, minimum height=0.5cm, align=center},
+    arr/.style={->, thick}]
+
+\node[blk] (src) {源图像};
+\node[blk, below=of src] (bp) {位平面\\分解};
+\node[lay, below left=0.6cm and 0.3cm of bp] (base) {基础层\\$B_7B_6$ (MSB)};
+\node[lay, below right=0.6cm and 0.3cm of bp] (enh) {增强层\\$B_5\cdots B_0$ (LSB)};
+\node[blk, below=1.2cm of bp] (chan) {信道};
+\node[lay, below left=0.6cm and 0.3cm of chan] (weak) {弱用户\\仅基础层};
+\node[lay, below right=0.6cm and 0.3cm of chan] (strong) {强用户\\基础+增强};
+
+\draw[arr] (src) -- (bp);
+\draw[arr] (bp) -- (base);
+\draw[arr] (bp) -- (enh);
+\draw[arr] (base) -- (chan);
+\draw[arr] (enh) -- (chan);
+\draw[arr] (chan) -- (weak);
+\draw[arr] (chan) -- (strong);
+\end{tikzpicture}
+\caption{FGS架构：位平面分解与多用户传输}
+\label{fig:fgs_arch_zh}
+\end{figure}
+
 传输策略：
 \begin{itemize}
     \item \textbf{基础层}：MSB位平面（$B_7, B_6$），提供基本轮廓。
@@ -359,10 +440,10 @@ psnr_strong = 10*log10(1/mean((im-recon_strong).^2));
 \toprule
 用户类型 & SNR (dB) & 接收层 & PSNR (dB) \\
 \midrule
-基础层（参考） & --- & 仅MSB(4位) & 6.68 \\
-弱用户 & 5 & 基础层 & 6.68 \\
-强用户($\Delta=5$) & 10 & 两层 & 6.94 \\
-强用户($\Delta=10$) & 15 & 两层 & 7.39 \\
+基础层（参考） & --- & 仅MSB(4位) & 6.43 \\
+弱用户 & 5 & 基础层 & 6.43 \\
+强用户($\Delta=5$) & 10 & 两层 & 6.80 \\
+强用户($\Delta=10$) & 15 & 两层 & 7.49 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -374,7 +455,7 @@ psnr_strong = 10*log10(1/mean((im-recon_strong).^2));
 \label{fig:p3}
 \end{figure}
 
-\textbf{分析}：FGS方案允许在单一码流中实现多级质量解码。本实验使用Cameraman测试图像时，由于DCT量化系数的动态范围较大，4位MSB不足以完整表示图像轮廓。实际应用中，对于8位图像，基础层通常包含3-5个MSB位平面。强用户($\Delta=10$ dB)比弱用户PSNR提高约0.7 dB。
+\textbf{分析}：FGS方案允许在单一码流中实现多级质量解码。强用户($\Delta=10$ dB)比弱用户PSNR提高约1.06 dB。
 
 \subsection{第四部分：OFDM无线传输}
 
@@ -457,6 +538,30 @@ R_X &\geq H(X|Y) \label{eq:sw1}\\
 R_Y &\geq H(Y|X) \label{eq:sw2}\\
 R_X + R_Y &\geq H(X,Y) \label{eq:sw3}
 \end{align}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.8cm, auto, font=\footnotesize,
+    blk/.style={rectangle, draw, minimum width=1.6cm, minimum height=0.5cm, align=center},
+    arr/.style={->, thick}]
+
+\node[blk] (x) {信源 $X$};
+\node[blk, right=of x] (encx) {编码器 $X$};
+\node[blk, below=1.2cm of x] (y) {信源 $Y$};
+\node[blk, right=of y] (ency) {编码器 $Y$};
+\node[blk, right=3cm of encx] (joint) {联合\\译码器};
+\node[blk, right=of joint, fill=green!10] (recx) {$\hat{X}$};
+
+\draw[arr] (x) -- (encx);
+\draw[arr] (y) -- (ency);
+\draw[arr] (encx) -- node[above] {综合征 $S_X$} (joint);
+\draw[arr] (ency) -- node[below] {边信息 $Y$} (joint);
+\draw[arr] (joint) -- (recx);
+\draw[dashed, <->] (x) -- node[right] {相关性} (y);
+\end{tikzpicture}
+\caption{Slepian-Wolf分布式信源编码：独立编码，联合译码}
+\label{fig:sw_arch_zh}
+\end{figure}
 
 其重要意义在于：即使独立编码，总速率仍可接近联合熵$H(X,Y)$。
 
@@ -549,7 +654,7 @@ sw_rate = size(syndrome_x, 2) / size(x_blocks, 2);
 
 \subsection{可伸缩编码意义}
 
-FGS使系统能在同一码流中服务不同信道条件的用户，避免了"一刀切"的传送效率损失。强用户(SNR=15 dB)相比弱用户(SNR=5 dB)PSNR提升0.71 dB，反映了4-LSB增强层携带的额外信息有限。
+FGS使系统能在同一码流中服务不同信道条件的用户，避免了"一刀切"的传送效率损失。强用户(SNR=15 dB)相比弱用户(SNR=5 dB)PSNR提升1.06 dB，反映了4-LSB增强层携带的额外信息有限。
 
 \subsection{OFDM与交织}
 
@@ -564,7 +669,7 @@ Slepian-Wolf定理在实践中的验证表明：通过综合征编码，可以�
 本实验系统性地构建并仿真了现代图像通信系统的五大核心模块，得出以下主要结论：
 
 \begin{enumerate}
-    \item \textbf{有损编码}：DCT+量化实现高效压缩。Cameraman图像在$\beta=0.5$时PSNR为42.31 dB，$\beta=16$时压缩比达404.2，PSNR降至25.24 dB。
+    \item \textbf{有损编码}：DCT+量化实现高效压缩。Lena图像在$\beta=0.5$时PSNR为45.20 dB，$\beta=16$时压缩比达361.5，PSNR降至25.76 dB。
     \item \textbf{信道编码}：未编码BPSK在AWGN信道下SNR=10 dB时BER达$2.86\times10^{-6}$。自定义(20,10)LDPC码由于码长短，BP译码性能有限，需更长的LDPC码以获得编码增益。
     \item \textbf{可伸缩编码}：FGS位平面编码实现了异构用户适配。强用户(SNR=15 dB)比弱用户(SNR=5 dB)获得更高PSNR。
     \item \textbf{OFDM传输}：64子载波OFDM有效缓解频率选择性衰落。多径信道下BER比AWGN信道高约4个数量级（SNR=10 dB时）。
